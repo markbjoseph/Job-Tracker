@@ -135,6 +135,8 @@
         const data = await response.json();
         
         console.log(data);
+
+        await getList(selectedBoard)
     };
 
 
@@ -265,6 +267,7 @@
                     <input type="text" 
                     placeholder="Enter list title"
                     onChange={(e) => setTitle(e.target.value)}
+                    value={title}
                      />
 
                     <form onSubmit={createList}>
