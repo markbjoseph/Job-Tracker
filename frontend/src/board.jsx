@@ -21,6 +21,8 @@
     const [showCardModal, setShowCardModal] = useState(false);
 
     const [selectedCard, setSelectedCard] = useState(null);
+
+    const [showTextList, setShowTextList] = useState(false);
     // ----------------------------------------------------------------------------
 
     const userBoards = async (e) => {
@@ -114,6 +116,27 @@
 
     };
 
+    const createList = async (e) => {
+        e.preventDefault();
+
+        //sends a POST request to the backend
+        const response = await fetch("http://localhost:3000/lists", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({title: title,
+                boardId: selectedBoard.id
+             })
+
+        });
+
+        const data = await response.json();
+        
+        console.log(data);
+    };
+
 
     return (
         <div>
@@ -123,8 +146,6 @@
                     <h1>Boards</h1>
 
                     <div>
-                        <h2>Your Boards</h2>
-
                         {/* if show boards is true render everything inside */}
                         {showBoards && (
                             <div className="board-overlay">
@@ -199,7 +220,7 @@
                 </div>
             )}
 
-        {/* to display the cards  */}
+        {/* to display the lists and cards  */}
         {selectedBoard && (
             <div>
                 
@@ -231,6 +252,28 @@
 
                     ))}
                 </div>
+
+                {!showTextList && (
+                    <button onClick={() => setShowTextList(true)}>
+                        Add Another List
+                    </button>
+                )}
+                
+                {showTextList && (
+                <div>
+                    
+                    <input type="text" 
+                    placeholder="Enter list title"
+                    onChange={(e) => setTitle(e.target.value)}
+                     />
+
+                    <form onSubmit={createList}>
+                        <button type="submit">
+                            Add List
+                        </button>
+                    </form>
+                </div>
+                )}
 
             </div>
         )}
