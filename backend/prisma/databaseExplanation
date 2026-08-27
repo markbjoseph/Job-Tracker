@@ -1,0 +1,136 @@
+User: John
+Board: University Project
+Lists: To Do, In Progress, Completed
+Cards: Design Database, Build Logic
+
+How It Works
+User: the user that logged in
+Board: a workspace where lists belong (can have multiple)
+Lists: Categories that categorise cards that belong to the board
+Cards: Things the user has to do 
+
+
+User Table - Stores information about everyone who signs up 
+
+id: int
+name: String
+email: String (unique)
+password: String
+boards: Board[] - one user can own many boards ([] - means array)
+createdAt DateTime @default(now())
+
+
+
+
+
+Board Table - A board is an entire Trello workspace 
+
+id: int
+title: String
+ownerId: int
+owner: User @relation(fields: [ownerId], references: [id])
+lists: List[] - every board has multiple lists
+
+
+Information
+
+gets the ownerId so that it knows which board belongs to which user e.g., board 5 belongs to user 1
+
+owner User - allows access to while User object e.g., id, name, email, password, boards
+
+owner User @relation(...) - tells Prisma these two models are connected (ownerID, and boardID)
+
+fields: [ownerId] - answers which field in the board table stores the connection which is ownerId 
+e.g., id: 1   
+      title: University      
+      ownerId: 3  
+the ownerId is 3
+
+references: [id] - answers which field in the User table does ownerId point to which is User.id
+e.g., id: 1     name: Sarah
+      id: 2     name: Mike
+      id: 3     name: John
+
+If ownerId is 3
+
+ownerId -> User.id -> 3 -> John
+
+so if there was no connection then the board would just know that the board belongs to userId 3 but not who they are 
+
+the connection allows Prisma to know that the board belongs to userId 3 Prisma should know to look for userId 3 in the User table which allows Prisma to get the full user object for more information instead of just 3
+
+
+
+User Table
+
++----+-------+
+| id | name  |
++----+-------+
+| 1  | Sarah |
+| 2  | Mike  |
+| 3  | John  |
++----+-------+
+
+           ▲
+           │ references: [id]
+           │
+
+Board Table
+
++----+-------------+---------+
+| id | title       | ownerId |
++----+-------------+---------+
+| 1  | University  |    3    |
++----+-------------+---------+
+
+           ▲
+           │
+      fields: [ownerId]
+
+
+A foreign key is a column in one table that references the primary key of another table, creating a relationship between the two tables.
+
+Why are foreign keys useful?
+
+Without a foreign key, you could accidentally store invalid data:
+
+id	title	ownerId
+1	University	999
+
+But if there is no user with id = 999, the board would point to someone who doesn't exist.
+
+A foreign key prevents this by enforcing referential integrity. The database won't let you create a board with an ownerId that doesn't exist in the User table.
+
+
+List Table - list is one column on a Trello board
+
+model List {
+  id        Int      @id @default(autoincrement())
+  title     String
+  position  Int
+
+  boardId   Int
+  board     Board @relation(fields: [boardId], references: [id])
+
+  cards     Card[]
+}
+
+position - shows order of the lists
+boardId - means the list belongs to specific boardId
+cards Card[] - every list contains cards
+
+
+Card - card represents one task
+
+model Card {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  position    Int
+
+  listId      Int
+  list         List @relation(fields: [listId], references: [id])
+}
+
+position - shows order of the cards
+listId - knows what card the list belongs to 

@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+//what it does
+//blueprint for database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username      String
+  email     String   @unique
+  password  String
+
+  boards    Board[]
+
+  createdAt DateTime @default(now())
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  title     String
+
+  ownerId   Int
+  owner      User @relation(fields: [ownerId], references: [id])
+
+  lists     List[]
+
+  createdAt DateTime @default(now())
+}
+
+model List {
+  id        Int      @id @default(autoincrement())
+  title     String
+  position  Int
+
+  boardId   Int
+  board     Board @relation(fields: [boardId], references: [id])
+
+  cards     Card[]
+}
+
+model Card {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  position    Int
+
+  listId      Int
+  list         List @relation(fields: [listId], references: [id])
+}
