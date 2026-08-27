@@ -18,6 +18,9 @@
     //stores the board the user chooses
     const [selectedBoard, setSelectedBoard] = useState(null);
 
+    const [showCardModal, setShowCardModal] = useState(false);
+
+    const [selectedCard, setSelectedCard] = useState(null);
     // ----------------------------------------------------------------------------
 
     const userBoards = async (e) => {
@@ -124,9 +127,9 @@
 
                         {/* if show boards is true render everything inside */}
                         {showBoards && (
-                            <div className="modal-overlay">
+                            <div className="board-overlay">
 
-                                <div className="modal">
+                                <div className="board-modal">
 
                                     {/* takes your boards array and goes through each board */}
                                     {boards.map((board) => (
@@ -206,11 +209,24 @@
                     {lists.map((list) => (
 
                         <div className="list" key={list.id}>
+
                             <h3>{list.title}</h3>
-                            <div className= "cards-container">{list.cards.map(card => (
-                                <p key={card.id}>
-                                    {card.title}</p>
+
+                            <div className= "cards-container">
+                                {list.cards.map(card => (
+
+                                <button key={card.id} className="card" 
+                                onClick={() => {
+                                    setShowCardModal(true)
+                                    setSelectedCard(card);
+                                }
+                                }>
+                                    {card.title}
+                                </button>
+
                             ))}</div>
+    
+
                         </div>
 
                     ))}
@@ -219,9 +235,20 @@
             </div>
         )}
 
+    {showCardModal && (
+        <div className="modal-overlay">
+            <div className="modal">
+                <h2>{selectedCard ? selectedCard.title : 'Card Details'}</h2>
+                <p>{selectedCard ? selectedCard.description : 'Card information goes here.'}</p>
+                <button onClick={() => setShowCardModal(false)}>Close</button>
+            </div>
+        </div>
+    )}
+
         </div>
 
     );
+
 
 }
 
