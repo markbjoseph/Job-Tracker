@@ -83,6 +83,8 @@
         console.log(data);
     };
 
+    
+
     const getList = async (board) => {
         
         //gets the lists for the selected board
@@ -145,59 +147,95 @@
 
             {!selectedBoard && (
                 <div>
-                    <h1>Boards</h1>
-
-                    <div>
-                        {/* if show boards is true render everything inside */}
-                        {showBoards && (
-                            <div className="board-overlay">
-
-                                <div className="board-modal">
-
-                                    {/* takes your boards array and goes through each board */}
-                                    {boards.map((board) => (
-
-                                        // each board becomes a button
-                                        <button
-                                            key={board.id}
-
-                                            // runs when the user clicks a particular board button
-                                            onClick={() => {
-
-                                                //stores the selected board
-                                                setSelectedBoard(board);
-
-                                                 getList(board);
-
-                                                //sets the update title to the title of the selected board (defaults to the name which can be changed later)
-                                                // setUpdateTitle(board.title);
-
-                                                //closes the modal
-                                                setShowBoards(false);
-                                        }}
-                                    >
-                                            {board.title}
-                                        </button>
-                                    ))}
-                                    
-                                    <button onClick={() => setShowBoards(false)}>
-                                        Close
-                                    </button>
-                                </div>
-
-                            </div>
-                        )}
+                                        
+                    {/* boards button */}
+                    <div className="sidebar">
 
                         <form onSubmit={userBoards}>
 
-                        <button type="submit">
-                            Boards
-                        </button>
+                            <button type="submit">
+                                Profile
+                            </button>
 
                         </form>
+
+                        <form onSubmit={userBoards}>
+
+                            <button type="submit">
+                               Settings
+                            </button>
+
+                        </form>
+
+                        <form onSubmit={userBoards}>
+
+                            <button type="submit">
+                               Boards
+                            </button>
+
+                        </form>
+
+                        <form onSubmit={userBoards}>
+
+                            <button type="submit">
+                               Members
+                            </button>
+
+                        </form>
+                        
+
+                    </div> 
+
+
+                    {/* board options when board button is opened  */}
+                    <div className="main-content">
+                        <div>
+                            {/* if show boards is true render everything inside */}
+                            {showBoards && (
+                                <div className="board-overlay">
+
+                                    <div className="board-modal">
+                                        <h1>Boards</h1>
+
+
+                                        {/* takes your boards array and goes through each board */}
+                                        {boards.map((board) => (
+
+                                            // each board becomes a button
+                                            <button
+                                                key={board.id}
+
+                                                // runs when the user clicks a particular board button
+                                                onClick={() => {
+
+                                                    //stores the selected board
+                                                    setSelectedBoard(board);
+
+                                                    getList(board);
+
+                                                    //sets the update title to the title of the selected board (defaults to the name which can be changed later)
+                                                    // setUpdateTitle(board.title);
+
+                                                    //closes the modal
+                                                    setShowBoards(false);
+                                            }}
+                                        >
+                                                {board.title}
+                                            </button>
+                                        ))}
+                                        
+                                        <button onClick={() => setShowBoards(false)}>
+                                            Close
+                                        </button>
+                                    </div>
+
+                                </div>
+                            )}
+
+                        </div>
                     </div>
 
-
+                    {/* create board button */}
                     <div>
                         <h2>Create a New Board</h2>
                     
@@ -219,6 +257,7 @@
 
                         </form>
                     </div>
+
                 </div>
             )}
 
@@ -248,6 +287,11 @@
                                 </button>
 
                             ))}</div>
+                        
+                            <button className="add-card">
+                                Add a Card + 
+                            </button>
+
     
 
                         </div>
