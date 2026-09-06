@@ -35,6 +35,14 @@
 
     const [newCardDescription, setNewCardDescription] = useState(false);
 
+    const [editingCardTitle, setEditingCardTitle] = useState(false);
+
+    const [cardTitle, setCardTitle] = useState(false);
+
+    const [editingCardDescription, setEditingCardDescription] = useState(false);
+
+    const [cardDescription, setCardDescription] = useState(false);
+
     // ----------------------------------------------------------------------------
 
     const userBoards = async (e) => {
@@ -399,11 +407,50 @@
 
     {showCardModal && (
         <div className="modal-overlay">
+
             <div className="modal">
-                <h2>{selectedCard ? selectedCard.title : 'Card Details'}</h2>
-                <p>{selectedCard ? selectedCard.description : 'Card information goes here.'}</p>
+
+                {editingCardTitle ? (
+                    <input 
+                    type="text"
+                    value={cardTitle}
+                    onChange={(e) => setCardTitle(e.target.value)}
+                    onBlur={"function"}
+                    />
+
+                ) : (
+                <h2 onClick={() => {
+                    setEditingCardTitle(true)
+                    setCardTitle(selectedCard.title)
+                    }}
+                >
+
+                    {selectedCard.title}
+
+                </h2>
+                )}
+
+                {editingCardDescription ? (
+                    <input 
+                    type="text"
+                    value={cardDescription}
+                    onChange={(e) => setCardDescription(e.target.value)}
+                    onBlur={"function"}
+                    />
+
+                ) : (
+                    <p onClick={() => {
+                        setEditingCardDescription(true)
+                        setCardDescription(selectedCard.description)
+                    }}>
+                        {selectedCard.description}
+                    </p>
+                )}
+
                 <button onClick={() => setShowCardModal(false)}>Close</button>
+
             </div>
+
         </div>
     )}
 

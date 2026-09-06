@@ -37,6 +37,23 @@ const createCards = async (req, res) => {
     })
 
     res.status(201).json(cards);
+
 };
 
-module.exports = {getCards, createCards};
+const updateCards = async (req, res) => {
+
+    const { title, description } = req.body;
+    const id = parseInt(req.params.id);
+
+    const cards = await prisma.card.update({
+        where: {id},
+        data: {title, description}
+    })
+
+    res.status(200).json(cards);
+
+};
+
+
+
+module.exports = {getCards, createCards, updateCards};
