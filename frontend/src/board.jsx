@@ -74,6 +74,19 @@
         const data = await response.json();
         
         console.log(data);
+    };
+
+    const createCard = async (e) => {
+        e.preventDefault();
+
+        const response = await fetch("http://localhost:3000/cards", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json" 
+            }, 
+            body: JSON.stringify({title: newCardTitle, description: newCardDescription, listId: selectedList})
+        });
     }
 
     const updateBoard = async (e) => {
@@ -342,7 +355,12 @@
 
                             ))}</div>
                         
-                            <button>
+                            <button 
+                            className="add-card"
+                            onClick={() => {
+                                setAddCardModal(true)
+                                setSelectedList(list.id)
+                            }}>
                                 Add a Card + 
                             </button>
 
@@ -385,6 +403,35 @@
                 <h2>{selectedCard ? selectedCard.title : 'Card Details'}</h2>
                 <p>{selectedCard ? selectedCard.description : 'Card information goes here.'}</p>
                 <button onClick={() => setShowCardModal(false)}>Close</button>
+            </div>
+        </div>
+    )}
+
+    {addCardModal && (
+        <div className="modal-overlay">
+            <div className="modal">
+
+                <form onSubmit={createCard}>
+                
+                    <input 
+                    type="text"
+                    value={newCardTitle}
+                    onChange={(e) => setNewCardTitle(e.target.value)}
+                    placeholder="Enter a Title"
+                    />          
+
+                    <input 
+                    type="text"
+                    value={newCardDescription}
+                    onChange={(e) => setNewCardDescription(e.target.value)}
+                    placeholder="Enter a Description"
+                    />  
+
+                    <button type="submit">
+                        Add
+                    </button>
+
+                </form>      
             </div>
         </div>
     )}

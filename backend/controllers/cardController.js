@@ -11,4 +11,32 @@ const getCards = async (req, res) => {
 
 };
 
-module.exports = getCards;
+const createCards = async (req, res) => {
+    
+    const { title, description, listId } = req.body;
+    const id = parseInt(listId)
+
+    const mostRecentCard = await prisma.card.findFirst({
+        where: {
+            listId: listId
+        },
+        orderBy: {
+            position: "desc"
+        }
+    })
+
+    const newPosition = mostRecentCard ? mostRecentCard.position + 1 : 1;
+
+    const cards = await prisma.card.create({
+        data: {
+            title: title,
+            description: description,
+            position: newPosition,
+            listId: id
+        }
+    })
+
+    res.status(201).json(cards);
+};
+
+module.exports = {getCards, createCards};
