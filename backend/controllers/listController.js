@@ -12,8 +12,8 @@ const getLists = async (req, res) => {
 };
 
 const createList = async (req, res) => {
-    const { title } = req.body;
-    const id = parseInt(req.user.userId)
+    const { title, boardId } = req.body;
+    const id = parseInt(boardId)
 
     const mostRecentList = await prisma.list.findFirst({
         where: {
@@ -36,4 +36,20 @@ const createList = async (req, res) => {
     res.status(201).json(list);
 };
 
-module.exports = { getLists, createList };
+const updateList = async (req, res) => {
+
+    const id = parseInt(req.params.id)
+    const { title } = req.body;
+
+    const list = await prisma.list.update({
+        where: {id},
+        data: {title}
+    })
+
+    res.status(200).json(list);
+
+}
+
+
+
+module.exports = { getLists, createList, updateList };

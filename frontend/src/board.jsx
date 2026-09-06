@@ -23,6 +23,18 @@
     const [selectedCard, setSelectedCard] = useState(null);
 
     const [showTextList, setShowTextList] = useState(false);
+
+    const [editingList, setEditingList] = useState(false);
+    const [selectedList, setSelectedList] = useState(false);
+
+    const [listTitle, setListTitle] = useState(false);
+
+    const [addCardModal, setAddCardModal] = useState(false);
+
+    const [newCardTitle, setNewCardTitle] = useState(false);
+
+    const [newCardDescription, setNewCardDescription] = useState(false);
+
     // ----------------------------------------------------------------------------
 
     const userBoards = async (e) => {
@@ -62,7 +74,7 @@
         const data = await response.json();
         
         console.log(data);
-    };
+    }
 
     const updateBoard = async (e) => {
         e.preventDefault();
@@ -83,7 +95,31 @@
         console.log(data);
     };
 
-    
+    const updateList = async (e) => {
+
+        const response = await fetch(`http://localhost:3000/lists/${editingList}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({title: listTitle})
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+            setLists((currentLists) =>
+                currentLists.map((list) =>
+                    list.id === editingList
+            ? { ...list, title: listTitle }
+            : list
+        )
+    );
+
+    setEditingList(null);
+        
+    }
 
     const getList = async (board) => {
         
@@ -272,7 +308,25 @@
 
                         <div className="list" key={list.id}>
 
-                            <h3>{list.title}</h3>
+                            {editingList === list.id ? (
+                                <input
+                                    type="text"
+                                    value={listTitle}
+                                    onChange={(e) => setListTitle(e.target.value)}
+                                    onBlur={updateList}
+                                    autoFocus
+                                />
+
+                            ) : (
+                                <h3
+                                    onClick={() => {
+                                        setEditingList(list.id);
+                                        setListTitle(list.title);
+                                    }}
+                                    >
+                                        {list.title}
+                                    </h3>
+                            )}
 
                             <div className= "cards-container">
                                 {list.cards.map(card => (
@@ -288,7 +342,7 @@
 
                             ))}</div>
                         
-                            <button className="add-card">
+                            <button>
                                 Add a Card + 
                             </button>
 
