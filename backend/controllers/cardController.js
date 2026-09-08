@@ -45,10 +45,20 @@ const updateCards = async (req, res) => {
     const { title, description } = req.body;
     const id = parseInt(req.params.id);
 
+    const data = {};
+
+    if(title !== undefined) {
+        data.title = title;
+    }
+
+    if(description !== undefined) {
+        data.description = description;
+    }
+
     const cards = await prisma.card.update({
         where: {id},
-        data: {title, description}
-    })
+        data: data
+    });
 
     res.status(200).json(cards);
 

@@ -142,6 +142,36 @@
         
     }
 
+    const updateCardTitle = async (e) => {
+
+        const response = await fetch(`http://localhost:3000/cards/${selectedCard.id}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`, 
+                "Content-Type": "application/json"
+            },
+            body:JSON.stringify({title: cardTitle})
+        });
+
+        const data = await response.json();
+        console.log(data);
+    };
+
+    const updateCardDescription = async (e) => {
+
+        const response = await fetch(`http://localhost:3000/cards/${selectedCard.id}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({description: cardDescription})
+        });
+
+        const data = await response.json();
+        console.log(data);
+    }
+
     const getList = async (board) => {
         
         //gets the lists for the selected board
@@ -415,7 +445,7 @@
                     type="text"
                     value={cardTitle}
                     onChange={(e) => setCardTitle(e.target.value)}
-                    onBlur={"function"}
+                    onBlur={updateCardTitle}
                     />
 
                 ) : (
@@ -435,7 +465,7 @@
                     type="text"
                     value={cardDescription}
                     onChange={(e) => setCardDescription(e.target.value)}
-                    onBlur={"function"}
+                    onBlur={updateCardDescription}
                     />
 
                 ) : (

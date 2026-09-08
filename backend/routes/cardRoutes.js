@@ -9,7 +9,7 @@ router.get("/cards", authToken, authMiddleware, getCards);
 
 router.post("/cards", authToken, authMiddleware, createCards);
 
-router.put("/cards/:id", authToken, authMiddleware,updateCards);
+router.put("/cards/:id", authToken, authMiddleware, updateCards);
 
 
 router.delete("/cards/:id", authToken, authMiddleware, (req, res) => {
