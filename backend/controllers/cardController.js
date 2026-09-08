@@ -64,6 +64,19 @@ const updateCards = async (req, res) => {
 
 };
 
+const deleteCards = async (req, res) => {
+
+    const id = parseInt(req.params.id);
+
+    const cards = await prisma.card.delete({
+        where: {
+            id
+        }
+    })
+
+    res.status(200).json(cards);
+}
 
 
-module.exports = {getCards, createCards, updateCards};
+
+module.exports = {getCards, createCards, updateCards, deleteCards};

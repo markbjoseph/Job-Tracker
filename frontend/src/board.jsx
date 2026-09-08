@@ -45,6 +45,8 @@
 
     const [showListMenu, setShowListMenu] = useState(false);
 
+    const [showCardMenu, setShowCardMenu] = useState(false);
+
 
     // ----------------------------------------------------------------------------
 
@@ -98,6 +100,8 @@
             }, 
             body: JSON.stringify({title: newCardTitle, description: newCardDescription, listId: selectedList})
         });
+
+        
     }
 
     const updateBoard = async (e) => {
@@ -246,10 +250,36 @@
         
         console.log(data);
 
-        setLists(lists.filter(list => list.id !== selectedList.id));
+        setLists(currentLists => currentLists.filter(list => list.id !== selectedList.id));
         setShowListMenu(false);
         setSelectedList(null);
     };
+
+        const deleteCard = async () => {
+
+        //sends a DELETE request to the backend
+        const response = await fetch(`http://localhost:3000/cards/${selectedCard.id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            },
+
+        });
+
+        const data = await response.json();
+        
+        console.log(data);
+
+        setLists(currentLists => currentLists.map(list => ({
+            ...list,
+            cards: list.cards.filter(card => card.id !== selectedCard.id)
+        })))
+
+        setShowCardMenu(false);
+        setSelectedCard(null);
+        setShowCardModal(false);
+    };
+    
     
 
     return (
@@ -499,15 +529,38 @@
                     />
 
                 ) : (
-                <h2 onClick={() => {
-                    setEditingCardTitle(true)
-                    setCardTitle(selectedCard.title)
-                    }}
-                >
 
-                    {selectedCard.title}
+                <div className="card-header">   
+                 
+                    <h2
+                    className="card-title" 
+                    onClick={() => {
+                        setEditingCardTitle(true)
+                        setCardTitle(selectedCard.title)
+                        }}
+                    >
 
-                </h2>
+                        {selectedCard.title}
+
+                    </h2>
+                    
+                    <div className="menu-container">
+
+                        <button className="card-menu"
+                        onClick={() => {
+                            setShowCardMenu(true)
+                            }}>⋮
+                        </button>
+                        
+                        {showCardMenu && (
+                            <div className="list-menu-dropdown">
+                                <button>Edit List</button>
+                                <button onClick={deleteCard}>Delete Card</button>
+                            </div>
+                        )}
+
+                    </div>
+                </div>
                 )}
 
                 {editingCardDescription ? (

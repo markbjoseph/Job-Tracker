@@ -120,3 +120,24 @@
 .menu-container {
     position: relative;
 }
+
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-menu {
+    border: none;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #555;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+    color:#222;
+}
