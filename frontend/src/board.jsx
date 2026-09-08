@@ -101,6 +101,13 @@
             body: JSON.stringify({title: newCardTitle, description: newCardDescription, listId: selectedList})
         });
 
+        const data = await response.json();
+        console.log(data);
+
+        setAddCardModal(false);
+
+        await getList(selectedBoard);
+
         
     }
 
