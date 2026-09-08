@@ -43,6 +43,9 @@
 
     const [cardDescription, setCardDescription] = useState(false);
 
+    const [showListMenu, setShowListMenu] = useState(false);
+
+
     // ----------------------------------------------------------------------------
 
     const userBoards = async (e) => {
@@ -228,6 +231,26 @@
         await getList(selectedBoard)
     };
 
+    const deleteList = async () => {
+
+        //sends a DELETE request to the backend
+        const response = await fetch(`http://localhost:3000/lists/${selectedList.id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            },
+
+        });
+
+        const data = await response.json();
+        
+        console.log(data);
+
+        setLists(lists.filter(list => list.id !== selectedList.id));
+        setShowListMenu(false);
+        setSelectedList(null);
+    };
+    
 
     return (
         <div>
@@ -369,14 +392,41 @@
                                 />
 
                             ) : (
-                                <h3
-                                    onClick={() => {
-                                        setEditingList(list.id);
-                                        setListTitle(list.title);
-                                    }}
-                                    >
-                                        {list.title}
-                                    </h3>
+                                <div className="list-header">
+                                    <h3
+                                        onClick={() => {
+                                            setEditingList(list.id);
+                                            setListTitle(list.title);
+                                        }}
+                                        >
+                                            {list.title}
+                                        </h3>
+
+                                        <div className="menu-container"
+                                        tabIndex={0}
+                                        onBlur={(e) => {
+                                            if (!e.currentTarget.contains(e.relatedTarget)) {
+                                                setShowListMenu(false);
+                                            }
+                                        }}
+                                        >
+                                        
+                                            <button className="list-menu"
+                                            onClick={() => {
+                                                setShowListMenu(true)
+                                                setSelectedList(list)
+                                            }}>⋮
+                                            </button>
+
+                                            {showListMenu && selectedList?.id === list.id && (
+                                                <div className="list-menu-dropdown">
+                                                    <button>Edit List</button>
+                                                    <button onClick={deleteList}>Delete List</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                </div>
+
                             )}
 
                             <div className= "cards-container">
@@ -521,27 +571,3 @@
 }
 
     export default Board;
-
-
-
-    // update code 
-
-                //     {selectedBoard && (
-                //     <div>
-                //         <h2>Update Board</h2>
-
-                //         <form onSubmit={updateBoard}>
-
-                //             <input
-                //                 type="text"
-                //                 value={updateTitle}
-                //                 onChange={(e) => setUpdateTitle(e.target.value)}
-                //             />
-
-                //             <button type="submit">
-                //                 Update Board
-                //             </button>
-
-                //         </form>
-                //     </div>
-                // )}

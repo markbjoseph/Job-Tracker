@@ -85,3 +85,38 @@
     margin-left: 260px;
     padding: 20px;
 }
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-menu {
+    border: none;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #555;
+}
+
+.list-menu-dropdown {
+    position: absolute;
+
+    top: 100%;
+    right: 0;
+
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    padding: 8px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.menu-container {
+    position: relative;
+}

@@ -50,6 +50,25 @@ const updateList = async (req, res) => {
 
 }
 
+const deleteList = async (req, res) => {
+
+    const id = parseInt(req.params.id)
+    
+    await prisma.card.deleteMany({
+        where: {
+            listId: id
+        }
+    })
+
+    const list = await prisma.list.delete({
+        where: {
+            id
+        }
+    })
+
+    res.json(list);
+}
 
 
-module.exports = { getLists, createList, updateList };
+
+module.exports = { getLists, createList, updateList, deleteList};
