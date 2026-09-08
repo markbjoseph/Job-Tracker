@@ -2,18 +2,20 @@
     display: flex;
     gap: 15px;
     align-items: flex-start;
+    overflow-x: auto;
+    padding: 10px;
 }
 
 .list {
     width: 250px;
     min-height: 300px;
     padding: 15px;
-    margin: 10px;
 
     border: 1px solid #ccc;
     border-radius: 8px;
 
     background-color: #f4f4f4;
+    flex-shrink: 0;
 }
 
 .cards-container {
