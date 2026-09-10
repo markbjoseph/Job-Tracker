@@ -49,6 +49,8 @@
 
     const [draggedList, setDraggedList] = useState(null);
 
+    const [draggedCard, setDraggedCard] = useState(null);
+
 
     // ----------------------------------------------------------------------------
 
@@ -438,6 +440,7 @@
                 <h2>{selectedBoard.title}</h2>
                 
                 <div className="lists-container">
+
                     {lists.map((list) => (
 
                         <div className="list" 
@@ -537,12 +540,68 @@
                             <div className= "cards-container">
                                 {list.cards.map(card => (
 
-                                <button key={card.id} className="card" 
+                                <button 
+                                key={card.id} 
+                                className="card" 
+
                                 onClick={() => {
                                     setShowCardModal(true)
                                     setSelectedCard(card);
                                 }
-                                }>
+                                }
+                                draggable
+
+                                onDragStart={(e) => {
+                                    e.stopPropagation();
+                                    setDraggedCard(card);
+                                }}
+
+                                onDragOver={(e) => {
+                                    e.preventDefault();
+                                }}
+
+                                onDrop={(e) => {
+
+                                    e.stopPropagation();
+                                    
+                                    const newLists = [...lists];
+
+                                    //find the list that the dragged card is from
+                                    //searches through each of the lists and inside that list will find the card that matches the draggedcardId
+                                    //if there is a match in .some() then it returns true
+                                    //.find() will see that .some returns true and returns which list it was iterating on 
+                                    const sourceList = newLists.find(i => i.cards.some(card => card.id === draggedCard.id));
+                                    //const numberList = numbers.find(number => | number === 2);
+                                    //                                          |
+
+
+                                    //get the index of the dragged card in the source list's cards array 
+                                    const draggedIndex = sourceList.cards.findIndex(card => card.id === draggedCard.id);
+                                    
+                                    //remove the dragged card from the list being modified specifically in the list it is in
+                                    newLists.forEach(i => {
+                                        if (i.id === sourceList.id) {
+                                            i.cards.splice(draggedIndex, 1);
+                                        }
+                                    });
+
+                                    //find the list that the dragged card is being dropped on
+                                    const targetList = newLists.find(i => i.id === list.id);
+
+
+
+                                    newLists.forEach( i => {
+                                        if(i.id === targetList.id) {
+                                            i.cards.splice(targetList.cards.length, 0, draggedCard);
+                                        }
+                                    })
+
+                                    setLists(newLists);
+
+                                    setDraggedCard(null);
+
+                                }}
+                                >
                                     {card.title}
                                 </button>
 
