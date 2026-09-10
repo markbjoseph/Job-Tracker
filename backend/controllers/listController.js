@@ -6,6 +6,10 @@ const getLists = async (req, res) => {
 
     const lists = await prisma.list.findMany({
         where: { boardId: id },
+
+        orderBy: {
+            position: "asc"
+        }
     });
     res.status(200).json(lists);
 
@@ -50,6 +54,20 @@ const updateList = async (req, res) => {
 
 }
 
+const updatePositions = async (req, res) => {
+
+    const lists = req.body;
+
+    for (const list of lists) {
+        await prisma.list.update({
+            where: { id: list.id },
+            data: { position: list.position }
+        })
+    }
+
+    res.status(200).json(lists);
+}
+
 const deleteList = async (req, res) => {
 
     const id = parseInt(req.params.id)
@@ -71,4 +89,4 @@ const deleteList = async (req, res) => {
 
 
 
-module.exports = { getLists, createList, updateList, deleteList};
+module.exports = { getLists, createList, updateList, deleteList, updatePositions };

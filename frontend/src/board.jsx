@@ -47,6 +47,8 @@
 
     const [showCardMenu, setShowCardMenu] = useState(false);
 
+    const [draggedList, setDraggedList] = useState(null);
+
 
     // ----------------------------------------------------------------------------
 
@@ -182,6 +184,27 @@
             body: JSON.stringify({description: cardDescription})
         });
 
+        const data = await response.json();
+        console.log(data);
+    }
+
+    const updatePositions = async (newLists) => {
+
+        const response = await fetch(`http://localhost:3000/lists/reorder`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                newLists.map((list, index) => ({
+                    id: list.id,
+                    position: index + 1
+                }))
+            )
+        })
+
+        
         const data = await response.json();
         console.log(data);
     }
@@ -417,7 +440,52 @@
                 <div className="lists-container">
                     {lists.map((list) => (
 
-                        <div className="list" key={list.id}>
+                        <div className="list" 
+                        key={list.id} 
+                        draggable
+
+                        //ondragstart runs when the user starts dragging a list
+                        //remembers that the user is dragging a particular list 
+                        onDragStart={() => {
+                            setDraggedList(list);
+                        }}
+                        
+                        //ondragover runs when the user drags a list over another list
+                        onDragOver={(e) => {
+                            //dont use the default behaviour, allow this list to be a drop target 
+                            e.preventDefault();
+                        }}
+
+                        //ondrop runs when the mouse is released over a particular list
+                        onDrop={() => {
+
+                            //make a copy of the lists array so it can be modified
+                            const newLists = [...lists];
+
+                            //finds the index of the dragged list originally
+                            const draggedIndex = newLists.findIndex(item => item.id === draggedList.id);
+
+                            //find the index of where the list that is taking the spot's index is
+                            //when releasing the dragged list to the list that is occupying the spot, onDrop belonging to the list that is occupying the spot's <div> runs
+                            const targetIndex = newLists.findIndex(item => item.id === list.id);
+                            
+                            //starting at index 1, remove 1 item so the list that was index 1 is removed from the list
+                            newLists.splice(draggedIndex, 1);
+
+                            //starting at target index, remove 0 items and add the dragged list
+                            newLists.splice(targetIndex, 0, draggedList); 
+
+                            //replace old list with new order
+                            setLists(newLists);
+
+                            updatePositions(newLists);
+
+                            //reset dragged list
+                            setDraggedList(null);
+                        }}
+                    
+                        >
+
 
                             {editingList === list.id ? (
                                 <input
