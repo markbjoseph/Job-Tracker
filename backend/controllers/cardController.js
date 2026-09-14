@@ -77,6 +77,25 @@ const deleteCards = async (req, res) => {
     res.status(200).json(cards);
 }
 
+const updateCardPositions = async (req, res) => {
+
+    const lists = req.body
+    
+    for (const list of lists) {
+        for(const card of list.cards) {
+            await prisma.card.update({
+                where: {id: card.id},
+                data: {
+                    position: card.position,
+                    listId: list.id
+                }
+            })
+        }
+    }
+
+    res.status(200).json(lists);
+}
 
 
-module.exports = {getCards, createCards, updateCards, deleteCards};
+
+module.exports = {getCards, createCards, updateCards, deleteCards, updateCardPositions};

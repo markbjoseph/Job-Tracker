@@ -208,10 +208,33 @@
             )
         })
 
-        
         const data = await response.json();
         console.log(data);
     }
+
+    const updateCardPositions = async (newLists) => {
+
+        const response = await fetch(`http://localhost:3000/cards/reorder`, {
+            method: "PUT",
+            headers: {
+                Authorization:`Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+              }, 
+            body: JSON.stringify(
+                newLists.map((list, index) => ({
+                    ...list, 
+                    cards: list.cards.map((card, index) => ({
+                        ...card, 
+                        position: index + 1
+                    }))
+                }))
+            )
+        })
+
+        const data = await response.json();
+        console.log(data);
+    }
+
 
     const getList = async (board) => {
         
@@ -500,7 +523,6 @@
                                     onBlur={updateList}
                                     autoFocus
                                 />
-
                             ) : (
                                 <div className="list-header">
                                     <h3
@@ -643,6 +665,8 @@
                                                 targetList.cards.splice(insertIndex, 0, draggedCard)
 
                                                 setLists(newLists);
+
+                                                updateCardPositions(newLists);
 
                                                 setDraggedCard(null);
 
