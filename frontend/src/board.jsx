@@ -426,33 +426,33 @@
                                         </button>
                                     </div>
 
+                                    {/* create board button */}
+                                    <div>
+                                        <h2>Create a New Board</h2>
+                                    
+                                        <form onSubmit={createBoard}>
+
+                                            <div>
+                                                <label>Title</label>
+                                                <input
+                                                    type="text"
+                                                    value={title}
+                                                    onChange={(e) => setTitle(e.target.value)}
+                                                    placeholder="Enter board title"
+                                                />
+                                            </div>
+
+                                            <button type="submit">
+                                                Create Board
+                                            </button>
+
+                                        </form>
+                                    </div>
+
                                 </div>
                             )}
 
                         </div>
-                    </div>
-
-                    {/* create board button */}
-                    <div>
-                        <h2>Create a New Board</h2>
-                    
-                        <form onSubmit={createBoard}>
-
-                            <div>
-                                <label>Title</label>
-                                <input
-                                    type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Enter board title"
-                                />
-                            </div>
-
-                            <button type="submit">
-                                Create Board
-                            </button>
-
-                        </form>
                     </div>
 
                 </div>
