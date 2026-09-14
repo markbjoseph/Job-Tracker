@@ -51,6 +51,8 @@
 
     const [draggedCard, setDraggedCard] = useState(null);
 
+    const [dropPosition, setDropPosition] = useState(null);
+
 
     // ----------------------------------------------------------------------------
 
@@ -540,72 +542,146 @@
                             <div className= "cards-container">
                                 {list.cards.map(card => (
 
-                                <button 
-                                key={card.id} 
-                                className="card" 
+                                    <div key={card.id}
 
-                                onClick={() => {
-                                    setShowCardModal(true)
-                                    setSelectedCard(card);
-                                }
-                                }
-                                draggable
+                                    //want the whole area around the card to participate in drag and drop
+                                    //wraps for each card
+                                    //card wrapper contains drop indicator and card button
+                                    className="card-wrapper" 
 
-                                onDragStart={(e) => {
-                                    e.stopPropagation();
-                                    setDraggedCard(card);
-                                }}
+                                            draggable
 
-                                onDragOver={(e) => {
-                                    e.preventDefault();
-                                }}
+                                            onDragStart={(e) => {
+                                                e.stopPropagation();
+                                                setDraggedCard(card);
+                                            }}
 
-                                onDrop={(e) => {
+                                            //function runs repeatedly while the user is dragging something over this wrapper
+                                            onDragOver={(e) => {
+                                                e.preventDefault();
 
-                                    e.stopPropagation();
-                                    
-                                    const newLists = [...lists];
+                                                //the element that this event handler is attached to 
+                                                //where is the element on the screen
 
-                                    //find the list that the dragged card is from
-                                    //searches through each of the lists and inside that list will find the card that matches the draggedcardId
-                                    //if there is a match in .some() then it returns true
-                                    //.find() will see that .some returns true and returns which list it was iterating on 
-                                    const sourceList = newLists.find(i => i.cards.some(card => card.id === draggedCard.id));
-                                    //const numberList = numbers.find(number => | number === 2);
-                                    //                                          |
+                                                const rect = e.currentTarget.getBoundingClientRect();
+
+                                                //mouse vertical position
+                                                const mouseY = e.clientY;
+
+                                                //middle of the wrapper
+                                                const middleY = rect.top + rect.height / 2;
+                                                
+                                                //is the mouse above the middle of the card
+                                                if(mouseY < middleY) {
+
+                                                    //stores cardId and the position
+                                                    setDropPosition({
+                                                        cardId: card.id,
+                                                        position: "top"
+                                                    });
+                                                } else {
+                                                    setDropPosition({
+                                                            cardId: card.id,
+                                                            position: "bottom"
+                                                        });
+                                                }
+                                            }}
+
+                                            onDrop={(e) => {
+
+                                                e.preventDefault();
+                                                e.stopPropagation();
+
+                                                if(!draggedCard || !dropPosition) {
+                                                    return;
+                                                }
+
+                                                const newLists = lists.map(list => ({
+                                                    ...list,
+                                                    cards: [...list.cards]
+                                                }));
+
+                                                //find the list that the dragged card is from
+                                                //searches through each of the lists and inside that list will find the card that matches the draggedcardId
+                                                //if there is a match in .some() then it returns true
+                                                //.find() will see that .some returns true and returns which list it was iterating on 
+                                                const sourceList = newLists.find(i => i.cards.some(card => card.id === draggedCard.id));
+                                                //const numberList = numbers.find(number => | number === 2);
+                                                //                                          |
+
+                                                if (!sourceList) {
+                                                    return;
+                                                }
+
+                                                //get the index of the dragged card in the source list's cards array 
+                                                const draggedIndex = sourceList.cards.findIndex(card => card.id === draggedCard.id);
+                                                
+                                                //remove the dragged card from the list being modified specifically in the list it is in
+                                                sourceList.cards.splice(draggedIndex, 1);
+
+                                                //find the list that the dragged card is being dropped on
+                                                const targetList = newLists.find(i => i.id === list.id);
+
+                                                if(!targetList) {
+                                                    return;
+                                                }
+
+                                                const targetIndex = targetList.cards.findIndex(i => i.id === dropPosition.cardId)
+
+                                                if(targetIndex === -1) {
+                                                    return;
+                                                }
+
+                                                let insertIndex;
+
+                                                if (dropPosition.position === "top") {
+                                                    insertIndex = targetIndex;
+                                                } else {
+                                                    insertIndex = targetIndex + 1;
+                                                }
+
+                                                targetList.cards.splice(insertIndex, 0, draggedCard)
+
+                                                setLists(newLists);
+
+                                                setDraggedCard(null);
+
+                                                setDropPosition(null);
+
+                                            }}
+                                            > 
 
 
-                                    //get the index of the dragged card in the source list's cards array 
-                                    const draggedIndex = sourceList.cards.findIndex(card => card.id === draggedCard.id);
-                                    
-                                    //remove the dragged card from the list being modified specifically in the list it is in
-                                    newLists.forEach(i => {
-                                        if (i.id === sourceList.id) {
-                                            i.cards.splice(draggedIndex, 1);
-                                        }
-                                    });
 
-                                    //find the list that the dragged card is being dropped on
-                                    const targetList = newLists.find(i => i.id === list.id);
+                                            
+                                            {/* only render the indicator if the current card is the target card and the position is top */}
+                                            {dropPosition?.cardId === card.id &&
+                                                dropPosition?.position === "top" && (
+                                                    <div className="drop-indicator"></div>
+                                                )}
 
+                                            {/* the card the user sees */}
+                                            <button 
+                                            className="card" 
 
+                                            onClick={() => {
+                                                setShowCardModal(true)
+                                                setSelectedCard(card);
+                                            }
+                                            }
+                                        >
+                                            {card.title}
+                                            </button>
 
-                                    newLists.forEach( i => {
-                                        if(i.id === targetList.id) {
-                                            i.cards.splice(targetList.cards.length, 0, draggedCard);
-                                        }
-                                    })
+                                        {dropPosition?.cardId === card.id &&
+                                            dropPosition?.position === "bottom" && (
+                                                <div className="drop-indicator"></div>
+                                            )}
 
-                                    setLists(newLists);
+                                    </div>
 
-                                    setDraggedCard(null);
-
-                                }}
-                                >
-                                    {card.title}
-                                </button>
-
-                            ))}</div>
+                            ))}
+                            </div>
                         
                             <button 
                             className="add-card"

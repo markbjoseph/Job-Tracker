@@ -143,3 +143,13 @@
     font-weight: bold;
     color:#222;
 }
+
+.drop-indicator {
+    height: 50px;
+    width: 100%;
+    background-color: #f0f0f0;
+    border: 2px dashed #999;
+    border-radius: 8px;
+    margin: 5px 0;
+    box-sizing: border-box;
+}
