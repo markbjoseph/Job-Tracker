@@ -62,8 +62,7 @@ const updatePositions = async (req, res) => {
         await prisma.list.update({
             where: { id: list.id },
             data: { 
-                position: list.position,
-                listId: list.id
+                position: list.position
              }
         })
     }
