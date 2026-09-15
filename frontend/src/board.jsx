@@ -31,9 +31,9 @@
 
     const [addCardModal, setAddCardModal] = useState(false);
 
-    const [newCardTitle, setNewCardTitle] = useState(false);
+    const [newCardTitle, setNewCardTitle] = useState("");
 
-    const [newCardDescription, setNewCardDescription] = useState(false);
+    const [newCardDescription, setNewCardDescription] = useState("");
 
     const [editingCardTitle, setEditingCardTitle] = useState(false);
 
@@ -995,8 +995,12 @@
         <div className="modal-overlay">
             <div className="modal">
 
+                <button onClick={() => setAddCardModal(false)}>
+                    Close
+                </button>
+
                 <form onSubmit={createCard}>
-                
+
                     <input 
                     type="text"
                     value={newCardTitle}
