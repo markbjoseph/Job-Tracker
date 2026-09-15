@@ -70,6 +70,12 @@ function Login() {
                 </button>
 
             </form>
+
+            
+            <button onClick={() => navigate("/registration")}>
+                Create New Account 
+            </button>
+
         </div>
     );
 }

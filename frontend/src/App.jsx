@@ -1,5 +1,5 @@
 import Login from "./login";
-import SignIn from "./signin";
+import Registration from "./registration";
 import Board from "./board";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -12,7 +12,7 @@ function App() {
             <Routes>
 
                 <Route path="/" element={<Login />} />
-                <Route path="/signin" element={<SignIn />} />
+                <Route path="/registration" element={<Registration />} />
                 <Route path="/board" element={<Board />} />
 
             </Routes>
