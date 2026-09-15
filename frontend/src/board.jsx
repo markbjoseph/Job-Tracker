@@ -1,4 +1,4 @@
-    import { useState } from "react";
+    import React, { useState } from "react";
     import "./board.css";
 
     function Board() {
@@ -52,6 +52,10 @@
     const [draggedCard, setDraggedCard] = useState(null);
 
     const [dropPosition, setDropPosition] = useState(null);
+
+    const [emptyListDrop, setEmptyListDrop] = useState(null);
+
+    const [dropListPosition, setDropListPosition] = useState(null);
 
 
     // ----------------------------------------------------------------------------
@@ -468,8 +472,55 @@
 
                     {lists.map((list) => (
 
+                        <React.Fragment key={list.id}>
+                        
+                        {/* is the current list used the target and is it on the left side */}
+                        {dropListPosition?.listId === list.id &&
+                            dropListPosition?.position === "left" && (
+                                <div className="list-drop-indicator"
+                                
+                                onDragOver={(e) => {
+                                    e.preventDefault();
+                                }}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+
+                                    if(!draggedList) {
+                                        return;
+                                    }
+
+                                    //make a copy of the lists array so it can be modified
+                                    const newLists = [...lists];
+
+                                    //finds the index of the dragged list originally
+                                    const draggedIndex = newLists.findIndex(item => item.id === draggedList.id);
+
+                                    //find the index of where the list that is taking the spot's index is
+                                    //when releasing the dragged list to the list that is occupying the spot, onDrop belonging to the list that is occupying the spot's <div> runs
+                                    const targetIndex = newLists.findIndex(item => item.id === list.id);
+                                    
+                                    //starting at index 1, remove 1 item so the list that was index 1 is removed from the list
+                                    newLists.splice(draggedIndex, 1);
+
+                                    //starting at target index, remove 0 items and add the dragged list
+                                    newLists.splice(targetIndex, 0, draggedList); 
+
+                                    //replace old list with new order
+                                    setLists(newLists);
+
+                                    updatePositions(newLists);
+
+                                    //reset dragged list
+                                    setDraggedList(null);
+                                    setDropListPosition(null);
+                                    }}
+                                >
+
+                                </div>
+                            )}
+
+
                         <div className="list" 
-                        key={list.id} 
                         draggable
 
                         //ondragstart runs when the user starts dragging a list
@@ -478,43 +529,98 @@
                             setDraggedList(list);
                         }}
                         
+                        onDragEnd={() => {
+                            setDraggedList(null);
+                            setDropListPosition(null);
+                        }}
+                        
                         //ondragover runs when the user drags a list over another list
                         onDragOver={(e) => {
                             //dont use the default behaviour, allow this list to be a drop target 
                             e.preventDefault();
+
+                            if(draggedList) {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                const mouseX = e.clientX;
+                                const middleX = rect.left + rect.width /2;
+
+                                if(mouseX < middleX) {
+                                    setDropListPosition({
+                                        listId: list.id,
+                                        position: "left"
+                                    });
+                                } else {
+                                    setDropListPosition({
+                                        listId: list.id,
+                                        position: "right" 
+                                    });
+                                }
+   
+                            }
+
+                            if(draggedCard && list.cards.length === 0) {
+                                setDropPosition(null);
+                                setEmptyListDrop(list.id);
+                            }
+
+                            
                         }}
 
                         //ondrop runs when the mouse is released over a particular list
                         onDrop={() => {
 
-                            //make a copy of the lists array so it can be modified
-                            const newLists = [...lists];
+                            if(draggedCard) {
+                                
+                                const newLists = lists.map(list => ({
+                                    ...list,
+                                    cards: [...list.cards]
+                                }));
 
-                            //finds the index of the dragged list originally
-                            const draggedIndex = newLists.findIndex(item => item.id === draggedList.id);
+                                //find the list the card came from
+                                const sourceList = newLists.find(
+                                    item => item.cards.some(card => card.id === draggedCard.id)
+                                );
 
-                            //find the index of where the list that is taking the spot's index is
-                            //when releasing the dragged list to the list that is occupying the spot, onDrop belonging to the list that is occupying the spot's <div> runs
-                            const targetIndex = newLists.findIndex(item => item.id === list.id);
-                            
-                            //starting at index 1, remove 1 item so the list that was index 1 is removed from the list
-                            newLists.splice(draggedIndex, 1);
+                                if (!sourceList) {
+                                    return;
+                                }
 
-                            //starting at target index, remove 0 items and add the dragged list
-                            newLists.splice(targetIndex, 0, draggedList); 
+                                //find the card's position in the source list
+                                const draggedIndex = sourceList.cards.findIndex(
+                                    card => card.id === draggedCard.id
+                                );
 
-                            //replace old list with new order
-                            setLists(newLists);
+                                //remove card from source list
+                                sourceList.cards.splice(draggedIndex, 1);
 
-                            updatePositions(newLists);
+                                //the current list is the list being dropped onto
+                                const targetList = newLists.find(
+                                    item => item.id === list.id
+                                );
 
-                            //reset dragged list
-                            setDraggedList(null);
+                                if (!targetList) {
+                                    return;
+                                }
+
+                                // Add card to the target list
+                                targetList.cards.push(draggedCard);
+
+                                setLists(newLists);
+
+                                updateCardPositions(newLists);
+
+                                setDraggedCard(null);
+                                setDropPosition(null);
+                                setEmptyListDrop(null);
+
+                                return;
+
+                            }
+
                         }}
                     
                         >
-
-
+                        
                             {editingList === list.id ? (
                                 <input
                                     type="text"
@@ -557,6 +663,7 @@
                                                 </div>
                                             )}
                                         </div>
+
                                 </div>
 
                             )}
@@ -577,10 +684,18 @@
                                                 e.stopPropagation();
                                                 setDraggedCard(card);
                                             }}
+                                            
 
                                             //function runs repeatedly while the user is dragging something over this wrapper
                                             onDragOver={(e) => {
+
+                                                if(!draggedCard) {
+                                                    return
+                                                }
+
                                                 e.preventDefault();
+
+                                                setEmptyListDrop(null);
 
                                                 //the element that this event handler is attached to 
                                                 //where is the element on the screen
@@ -615,6 +730,12 @@
                                                 e.stopPropagation();
 
                                                 if(!draggedCard || !dropPosition) {
+                                                    return;
+                                                }
+
+                                                if(draggedCard.id === dropPosition.cardId) {
+                                                    setDraggedCard(null);
+                                                    setDropPosition(null);
                                                     return;
                                                 }
 
@@ -706,6 +827,10 @@
 
                             ))}
                             </div>
+
+                                {draggedCard && list.cards.length === 0 && emptyListDrop === list.id && (
+                                    <div className="drop-indicator"></div>
+                                    )}
                         
                             <button 
                             className="add-card"
@@ -720,6 +845,51 @@
 
                         </div>
 
+                        {dropListPosition?.listId === list.id &&
+                            dropListPosition?.position === "right" && (
+                                <div className="list-drop-indicator"
+                                
+                                onDragOver={(e) => {
+                                    e.preventDefault();
+                                }}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+
+                                    if(!draggedList) {
+                                        return;
+                                    }
+
+                                    //make a copy of the lists array so it can be modified
+                                    const newLists = [...lists];
+
+                                    //finds the index of the dragged list originally
+                                    const draggedIndex = newLists.findIndex(item => item.id === draggedList.id);
+
+                                    //find the index of where the list that is taking the spot's index is
+                                    //when releasing the dragged list to the list that is occupying the spot, onDrop belonging to the list that is occupying the spot's <div> runs
+                                    const targetIndex = newLists.findIndex(item => item.id === list.id);
+                                    
+                                    //starting at index 1, remove 1 item so the list that was index 1 is removed from the list
+                                    newLists.splice(draggedIndex, 1);
+
+                                    //starting at target index, remove 0 items and add the dragged list
+                                    newLists.splice(targetIndex + 1, 0, draggedList); 
+
+                                    //replace old list with new order
+                                    setLists(newLists);
+
+                                    updatePositions(newLists);
+
+                                    //reset dragged list
+                                    setDraggedList(null);
+                                    setDropListPosition(null);
+                                    }}
+                                >
+
+                                </div>
+                            )}
+
+                    </React.Fragment>
                     ))}
                 </div>
 
