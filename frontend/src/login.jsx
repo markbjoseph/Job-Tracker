@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./login.css";
 
 function Login() {
 
@@ -42,39 +43,51 @@ function Login() {
         <div>
             <h1>Login</h1>
 
-            <form onSubmit={handleSubmit}>
-                
-                <div>
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        value={email}
-                        //react updates the email state when user types into the email box 
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                    />
-                </div>
+            <div className="login-page"> 
 
-                <div>
-                    <label>Password</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
-                    />
-                </div>
+                    <form 
+                    onSubmit={handleSubmit}
+                    className="login-container"
+                    >
+                        
+                        <div className="input-container">
+                            <label>Email</label>
+                            <input
+                                type="email"
+                                value={email}
+                                //react updates the email state when user types into the email box 
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                            />
 
-                <button type="submit">
-                    Login
-                </button>
+                            <label>Password</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
+                            />
+                        </div>
+                        
+                        <div className="button-container">
 
-            </form>
+                            <button type="submit">
+                                Login
+                            </button>
 
+                            <button 
+                                onClick={() => navigate("/registration")}
+                                type="button"
+                            >
+                                Create New Account 
+                            </button>
+
+                        </div>
+
+                    </form>
+
+            </div>
             
-            <button onClick={() => navigate("/registration")}>
-                Create New Account 
-            </button>
 
         </div>
     );
