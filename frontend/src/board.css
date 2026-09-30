@@ -221,3 +221,26 @@
     height: auto;
     left: 0;
 }
+
+.board-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.members-list {
+    list-style: none;
+    padding: 0;
+}
+
+.members-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 0;
+}
+
+.member-error {
+    color: #d33;
+}

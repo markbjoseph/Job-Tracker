@@ -1,8 +1,14 @@
 const prisma = require("../thePrisma");
+const { canAccessList, canAccessCard } = require("./boardAccess");
 
 const getCards = async (req, res) => {
 
     const id = parseInt(req.query.listId);
+
+    if (!(await canAccessList(req.user.userId, id))) {
+        return res.status(403).json({ message: "No access to this board" });
+    }
+
 
     const cards = await prisma.card.findMany({
         where: { listId: id },
@@ -15,6 +21,11 @@ const createCards = async (req, res) => {
     
     const { title, description, listId } = req.body;
     const id = parseInt(listId)
+
+    if (!(await canAccessList(req.user.userId, id))) {
+        return res.status(403).json({ message: "No access to this board" });
+    }
+
 
     const mostRecentCard = await prisma.card.findFirst({
         where: {
@@ -45,6 +56,11 @@ const updateCards = async (req, res) => {
     const { title, description } = req.body;
     const id = parseInt(req.params.id);
 
+    if (!(await canAccessCard(req.user.userId, id))) {
+        return res.status(403).json({ message: "No access to this board" });
+    }
+
+
     const data = {};
 
     if(title !== undefined) {
@@ -68,6 +84,11 @@ const deleteCards = async (req, res) => {
 
     const id = parseInt(req.params.id);
 
+    if (!(await canAccessCard(req.user.userId, id))) {
+        return res.status(403).json({ message: "No access to this board" });
+    }
+
+
     const cards = await prisma.card.delete({
         where: {
             id
@@ -80,6 +101,17 @@ const deleteCards = async (req, res) => {
 const updateCardPositions = async (req, res) => {
 
     const lists = req.body
+
+    for (const list of lists) {
+        if (!(await canAccessList(req.user.userId, list.id))) {
+            return res.status(403).json({ message: "No access to this board" });
+        }
+        for (const card of list.cards) {
+            if (!(await canAccessCard(req.user.userId, card.id))) {
+                return res.status(403).json({ message: "No access to this board" });
+            }
+        }
+    }
     
     for (const list of lists) {
         for(const card of list.cards) {

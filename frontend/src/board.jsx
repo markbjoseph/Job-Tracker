@@ -61,6 +61,16 @@
 
     const [sideBarOpen, setSideBarOpen] = useState(true);
 
+    const [showMembersModal, setShowMembersModal] = useState(false);
+
+    const [boardOwner, setBoardOwner] = useState(null);
+
+    const [members, setMembers] = useState([]);
+
+    const [inviteEmail, setInviteEmail] = useState("");
+
+    const [memberError, setMemberError] = useState("");
+
 
     // ----------------------------------------------------------------------------
 
@@ -107,6 +117,72 @@
         setTitle("");
 
         await getBoards();
+    };
+
+    const getMembers = async () => {
+
+        const response = await fetch(`http://localhost:3000/boards/${selectedBoard.id}/members`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        const data = await response.json();
+
+        setBoardOwner(data.owner);
+        setMembers(data.members);
+    };
+
+    const openMembersModal = async () => {
+        setMemberError("");
+        setShowMembersModal(true);
+        await getMembers();
+    };
+
+    const inviteMember = async (e) => {
+        e.preventDefault();
+
+        const response = await fetch(`http://localhost:3000/boards/${selectedBoard.id}/members`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email: inviteEmail })
+        });
+
+        const data = await response.json();
+
+        // show the error from the backend, e.g. "User not found"
+        if (!response.ok) {
+            setMemberError(data.message);
+            return;
+        }
+
+        setMemberError("");
+        setInviteEmail("");
+
+        await getMembers();
+    };
+
+    const removeMember = async (userId) => {
+
+        const response = await fetch(`http://localhost:3000/boards/${selectedBoard.id}/members/${userId}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            setMemberError(data.message);
+            return;
+        }
+
+        await getMembers();
     };
 
     const createCard = async (e) => {
@@ -403,7 +479,13 @@
         {selectedBoard && (
             <div class={`main-content ${sideBarOpen ? "sidebar-open" : "sidebar-closed"}`}>
                 
-                <h2>{selectedBoard.title}</h2>
+                <div className="board-header">
+                    <h2>{selectedBoard.title}</h2>
+
+                    <button onClick={openMembersModal}>
+                        Members
+                    </button>
+                </div>
                 
                 <div className="lists-container">
 
@@ -925,6 +1007,54 @@
 
             </div>
 
+        </div>
+    )}
+
+    {showMembersModal && (
+        <div className="modal-overlay">
+            <div className="modal">
+
+                <button onClick={() => setShowMembersModal(false)}>
+                    Close
+                </button>
+
+                <h2>Members</h2>
+
+                <ul className="members-list">
+                    {boardOwner && (
+                        <li>
+                            {boardOwner.username} ({boardOwner.email}) - Owner
+                        </li>
+                    )}
+
+                    {members.map((member) => (
+                        <li key={member.id}>
+                            {member.username} ({member.email})
+
+                            <button onClick={() => removeMember(member.id)}>
+                                Remove
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+
+                <form onSubmit={inviteMember}>
+
+                    <input
+                    type="email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    placeholder="Enter an email to invite"
+                    />
+
+                    <button type="submit">
+                        Invite
+                    </button>
+
+                </form>
+
+                {memberError && <p className="member-error">{memberError}</p>}
+            </div>
         </div>
     )}
 

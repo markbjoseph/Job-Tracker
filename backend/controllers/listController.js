@@ -1,8 +1,14 @@
 const prisma = require("../thePrisma");
+const { canAccessBoard, canAccessList } = require("./boardAccess");
 
 const getLists = async (req, res) => {
 
     const id = parseInt(req.query.boardId);
+
+    if (!(await canAccessBoard(req.user.userId, id))) {
+        return res.status(403).json({ message: "No access to this board" });
+    }
+
 
     const lists = await prisma.list.findMany({
         where: { boardId: id },
@@ -18,6 +24,11 @@ const getLists = async (req, res) => {
 const createList = async (req, res) => {
     const { title, boardId } = req.body;
     const id = parseInt(boardId)
+
+    if (!(await canAccessBoard(req.user.userId, id))) {
+        return res.status(403).json({ message: "No access to this board" });
+    }
+
 
     const mostRecentList = await prisma.list.findFirst({
         where: {
@@ -45,6 +56,11 @@ const updateList = async (req, res) => {
     const id = parseInt(req.params.id)
     const { title } = req.body;
 
+    if (!(await canAccessList(req.user.userId, id))) {
+        return res.status(403).json({ message: "No access to this board" });
+    }
+
+
     const list = await prisma.list.update({
         where: {id},
         data: {title}
@@ -57,6 +73,12 @@ const updateList = async (req, res) => {
 const updatePositions = async (req, res) => {
 
     const lists = req.body;
+
+    for (const list of lists) {
+        if (!(await canAccessList(req.user.userId, list.id))) {
+            return res.status(403).json({ message: "No access to this board" });
+        }
+    }
 
     for (const list of lists) {
         await prisma.list.update({
@@ -73,7 +95,12 @@ const updatePositions = async (req, res) => {
 const deleteList = async (req, res) => {
 
     const id = parseInt(req.params.id)
-    
+
+    if (!(await canAccessList(req.user.userId, id))) {
+        return res.status(403).json({ message: "No access to this board" });
+    }
+
+
     await prisma.card.deleteMany({
         where: {
             listId: id
