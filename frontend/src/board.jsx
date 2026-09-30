@@ -477,7 +477,7 @@
 
         {/* to display the lists and cards  */}
         {selectedBoard && (
-            <div class={`main-content ${sideBarOpen ? "sidebar-open" : "sidebar-closed"}`}>
+            <div className={`main-content ${sideBarOpen ? "sidebar-open" : "sidebar-closed"}`}>
                 
                 <div className="board-header">
                     <h2>{selectedBoard.title}</h2>
