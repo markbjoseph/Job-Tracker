@@ -1,5 +1,6 @@
-    import React, { useState } from "react";
+    import React, { useEffect, useState } from "react";
     import "./board.css";
+    import sidebarIcon from "./assets/sidebarIcon.svg"
 
     function Board() {
 
@@ -12,8 +13,7 @@
     //stores the list of boards, lists, and cards retrieved from the backend
     const [boards, setBoards] = useState([]);
     const [lists, setLists] = useState([]);
-    //controls whether the modal is visible or not 
-    const [showBoards, setShowBoards] = useState(false);
+    
 
     //stores the board the user chooses
     const [selectedBoard, setSelectedBoard] = useState(null);
@@ -57,11 +57,14 @@
 
     const [dropListPosition, setDropListPosition] = useState(null);
 
+    const [selectedButton, setSelectedButton] = useState("Boards")
+
+    const [sideBarOpen, setSideBarOpen] = useState(true);
+
 
     // ----------------------------------------------------------------------------
 
-    const userBoards = async (e) => {
-        e.preventDefault();
+    const getBoards = async () => {
 
         //sends a GET request to the backend
         const response = await fetch("http://localhost:3000/boards", {
@@ -74,11 +77,14 @@
         const data = await response.json();
 
         setBoards(data);
-        setShowBoards(true);
 
         console.log(data);
 
     };
+
+    useEffect(() => {
+        getBoards();
+    }, []);
 
     const createBoard = async (e) => {
         e.preventDefault();
@@ -97,6 +103,10 @@
         const data = await response.json();
         
         console.log(data);
+
+        setTitle("");
+
+        await getBoards();
     };
 
     const createCard = async (e) => {
@@ -345,126 +355,53 @@
 
     return (
         <div>
-
-            {!selectedBoard && (
-                <div>
                                         
-                    {/* boards button */}
-                    <div className="sidebar">
+                    {/* sidebar */}
 
-                        <form onSubmit={userBoards}>
+                
+                    <div className={`sidebar ${sideBarOpen ? "sidebar-open" : "sidebar-closed"}`}>
 
-                            <button type="submit">
-                                Profile
-                            </button>
+                        <div className="header">
 
-                        </form>
-
-                        <form onSubmit={userBoards}>
-
-                            <button type="submit">
-                               Settings
-                            </button>
-
-                        </form>
-
-                        <form onSubmit={userBoards}>
-
-                            <button type="submit">
-                               Boards
-                            </button>
-
-                        </form>
-
-                        <form onSubmit={userBoards}>
-
-                            <button type="submit">
-                               Members
-                            </button>
-
-                        </form>
+                        <img 
+                        src={sidebarIcon} 
+                        alt="sidebarIcon" 
+                        onClick={() => setSideBarOpen(!sideBarOpen)}
+                        />
                         
-
-                    </div> 
-
-
-                    {/* board options when board button is opened  */}
-                    <div className="main-content">
-                        <div>
-                            {/* if show boards is true render everything inside */}
-                            {showBoards && (
-                                <div className="board-overlay">
-
-                                    <div className="board-modal">
-                                        <h1>Boards</h1>
-
-
-                                        {/* takes your boards array and goes through each board */}
-                                        {boards.map((board) => (
-
-                                            // each board becomes a button
-                                            <button
-                                                key={board.id}
-
-                                                // runs when the user clicks a particular board button
-                                                onClick={() => {
-
-                                                    //stores the selected board
-                                                    setSelectedBoard(board);
-
-                                                    getList(board);
-
-                                                    //sets the update title to the title of the selected board (defaults to the name which can be changed later)
-                                                    // setUpdateTitle(board.title);
-
-                                                    //closes the modal
-                                                    setShowBoards(false);
-                                            }}
-                                        >
-                                                {board.title}
-                                            </button>
-                                        ))}
-                                        
-                                        <button onClick={() => setShowBoards(false)}>
-                                            Close
-                                        </button>
-                                    </div>
-
-                                    {/* create board button */}
-                                    <div>
-                                        <h2>Create a New Board</h2>
-                                    
-                                        <form onSubmit={createBoard}>
-
-                                            <div>
-                                                <label>Title</label>
-                                                <input
-                                                    type="text"
-                                                    value={title}
-                                                    onChange={(e) => setTitle(e.target.value)}
-                                                    placeholder="Enter board title"
-                                                />
-                                            </div>
-
-                                            <button type="submit">
-                                                Create Board
-                                            </button>
-
-                                        </form>
-                                    </div>
-
-                                </div>
-                            )}
+                        {sideBarOpen && <h2> Boards </h2>}
 
                         </div>
-                    </div>
 
-                </div>
-            )}
+                        {sideBarOpen && (
+                            boards.map((board) => (
+                        
+                            <button
+                            key={board.id}
+                            type="button"
+                            className={`sidebar-button ${selectedBoard?.id === board.id ? "selected" : ""}`}
+                            onClick={() => {
+                                setSelectedBoard(board);
+                                getList(board);
+                            }}
+                            >
+                            
+                            {board.title}
+
+                            </button>
+
+                            ))
+                    )}
+
+                        
+
+                    </div>  
+                    
+
 
         {/* to display the lists and cards  */}
         {selectedBoard && (
-            <div>
+            <div class={`main-content ${sideBarOpen ? "sidebar-open" : "sidebar-closed"}`}>
                 
                 <h2>{selectedBoard.title}</h2>
                 
