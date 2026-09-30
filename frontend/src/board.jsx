@@ -252,6 +252,20 @@
         
     }
 
+    // replace the edited card on screen with the updated one from the server
+    const replaceCard = (updatedCard) => {
+        setSelectedCard(updatedCard);
+
+        setLists((currentLists) =>
+            currentLists.map((list) => ({
+                ...list,
+                cards: list.cards?.map((card) =>
+                    card.id === updatedCard.id ? updatedCard : card
+                )
+            }))
+        );
+    };
+
     const updateCardTitle = async (e) => {
 
         const response = await fetch(`http://localhost:3000/cards/${selectedCard.id}`, {
@@ -265,6 +279,9 @@
 
         const data = await response.json();
         console.log(data);
+
+        replaceCard(data);
+        setEditingCardTitle(false);
     };
 
     const updateCardDescription = async (e) => {
@@ -280,6 +297,9 @@
 
         const data = await response.json();
         console.log(data);
+
+        replaceCard(data);
+        setEditingCardDescription(false);
     }
 
     const updatePositions = async (newLists) => {
@@ -949,6 +969,8 @@
                     value={cardTitle}
                     onChange={(e) => setCardTitle(e.target.value)}
                     onBlur={updateCardTitle}
+                    onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
+                    autoFocus
                     />
 
                 ) : (
@@ -977,7 +999,6 @@
                         
                         {showCardMenu && (
                             <div className="list-menu-dropdown">
-                                <button>Edit List</button>
                                 <button onClick={deleteCard}>Delete Card</button>
                             </div>
                         )}
@@ -992,6 +1013,8 @@
                     value={cardDescription}
                     onChange={(e) => setCardDescription(e.target.value)}
                     onBlur={updateCardDescription}
+                    autoFocus
+                    onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
                     />
 
                 ) : (
