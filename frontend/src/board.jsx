@@ -35,13 +35,9 @@
 
     const [newCardDescription, setNewCardDescription] = useState("");
 
-    const [editingCardTitle, setEditingCardTitle] = useState(false);
 
-    const [cardTitle, setCardTitle] = useState(false);
 
-    const [editingCardDescription, setEditingCardDescription] = useState(false);
 
-    const [cardDescription, setCardDescription] = useState(false);
 
     const [showListMenu, setShowListMenu] = useState(false);
 
@@ -268,6 +264,15 @@
 
     const updateCardTitle = async (e) => {
 
+        const cardTitle = e.target.innerText.trim();
+
+        // nothing changed (or left empty), put the old title back and skip saving
+        if (!cardTitle || cardTitle === selectedCard.title) {
+            e.target.innerText = selectedCard.title;
+            return;
+        }
+
+
         const response = await fetch(`http://localhost:3000/cards/${selectedCard.id}`, {
             method: "PUT",
             headers: {
@@ -281,10 +286,16 @@
         console.log(data);
 
         replaceCard(data);
-        setEditingCardTitle(false);
     };
 
     const updateCardDescription = async (e) => {
+
+        const cardDescription = e.target.innerText.trim();
+
+        if (cardDescription === (selectedCard.description || "")) {
+            return;
+        }
+
 
         const response = await fetch(`http://localhost:3000/cards/${selectedCard.id}`, {
             method: "PUT",
@@ -299,7 +310,6 @@
         console.log(data);
 
         replaceCard(data);
-        setEditingCardDescription(false);
     }
 
     const updatePositions = async (newLists) => {
@@ -963,32 +973,25 @@
 
             <div className="modal">
 
-                {editingCardTitle ? (
-                    <input 
-                    type="text"
-                    value={cardTitle}
-                    onChange={(e) => setCardTitle(e.target.value)}
-                    onBlur={updateCardTitle}
-                    onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
-                    autoFocus
-                    />
+                <div className="card-header">
 
-                ) : (
-
-                <div className="card-header">   
-                 
+                    {/* edit the title in place, saves when clicking away */}
                     <h2
-                    className="card-title" 
-                    onClick={() => {
-                        setEditingCardTitle(true)
-                        setCardTitle(selectedCard.title)
-                        }}
+                    key={`title-${selectedCard.title}`}
+                    className="card-title editable"
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={updateCardTitle}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            e.target.blur();
+                        }
+                    }}
                     >
-
                         {selectedCard.title}
-
                     </h2>
-                    
+
                     <div className="menu-container">
 
                         <button className="card-menu"
@@ -1005,26 +1008,24 @@
 
                     </div>
                 </div>
-                )}
 
-                {editingCardDescription ? (
-                    <input 
-                    type="text"
-                    value={cardDescription}
-                    onChange={(e) => setCardDescription(e.target.value)}
-                    onBlur={updateCardDescription}
-                    autoFocus
-                    onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
-                    />
-
-                ) : (
-                    <p onClick={() => {
-                        setEditingCardDescription(true)
-                        setCardDescription(selectedCard.description)
-                    }}>
-                        {selectedCard.description}
-                    </p>
-                )}
+                {/* edit the description in place, saves when clicking away */}
+                <p
+                key={`description-${selectedCard.description}`}
+                className="editable"
+                contentEditable
+                suppressContentEditableWarning
+                data-placeholder="Add a description..."
+                onBlur={updateCardDescription}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.target.blur();
+                    }
+                }}
+                >
+                    {selectedCard.description}
+                </p>
 
                 <button onClick={() => setShowCardModal(false)}>Close</button>
 

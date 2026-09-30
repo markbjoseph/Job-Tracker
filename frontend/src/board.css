@@ -244,3 +244,19 @@
 .member-error {
     color: #d33;
 }
+
+/* in-place editing for the card title and description */
+.editable {
+    outline: none;
+    cursor: text;
+    border-radius: 4px;
+}
+
+.editable:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.editable:empty::before {
+    content: attr(data-placeholder);
+    color: #999;
+}
