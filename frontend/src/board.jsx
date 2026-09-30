@@ -24,10 +24,8 @@
 
     const [showTextList, setShowTextList] = useState(false);
 
-    const [editingList, setEditingList] = useState(false);
     const [selectedList, setSelectedList] = useState(false);
 
-    const [listTitle, setListTitle] = useState(false);
 
     const [addCardModal, setAddCardModal] = useState(false);
 
@@ -222,9 +220,17 @@
         console.log(data);
     };
 
-    const updateList = async (e) => {
+    const updateList = async (list, e) => {
 
-        const response = await fetch(`http://localhost:3000/lists/${editingList}`, {
+        const listTitle = e.target.innerText.trim();
+
+        // nothing changed (or left empty), put the old title back and skip saving
+        if (!listTitle || listTitle === list.title) {
+            e.target.innerText = list.title;
+            return;
+        }
+
+        const response = await fetch(`http://localhost:3000/lists/${list.id}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -236,16 +242,13 @@
         const data = await response.json();
         console.log(data);
 
-            setLists((currentLists) =>
-                currentLists.map((list) =>
-                    list.id === editingList
-            ? { ...list, title: listTitle }
-            : list
-        )
-    );
-
-    setEditingList(null);
-        
+        setLists((currentLists) =>
+            currentLists.map((currentList) =>
+                currentList.id === list.id
+                    ? { ...currentList, title: listTitle }
+                    : currentList
+            )
+        );
     }
 
     // replace the edited card on screen with the updated one from the server
@@ -670,24 +673,24 @@
                     
                         >
                         
-                            {editingList === list.id ? (
-                                <input
-                                    type="text"
-                                    value={listTitle}
-                                    onChange={(e) => setListTitle(e.target.value)}
-                                    onBlur={updateList}
-                                    autoFocus
-                                />
-                            ) : (
-                                <div className="list-header">
-                                    <h3
-                                        onClick={() => {
-                                            setEditingList(list.id);
-                                            setListTitle(list.title);
-                                        }}
-                                        >
-                                            {list.title}
-                                        </h3>
+                            <div className="list-header">
+
+                                {/* edit the list title in place, saves when clicking away */}
+                                <h3
+                                key={`list-title-${list.title}`}
+                                className="editable"
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e) => updateList(list, e)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        e.target.blur();
+                                    }
+                                }}
+                                >
+                                    {list.title}
+                                </h3>
 
                                         <div className="menu-container"
                                         tabIndex={0}
@@ -707,15 +710,12 @@
 
                                             {showListMenu && selectedList?.id === list.id && (
                                                 <div className="list-menu-dropdown">
-                                                    <button>Edit List</button>
                                                     <button onClick={deleteList}>Delete List</button>
                                                 </div>
                                             )}
                                         </div>
 
-                                </div>
-
-                            )}
+                            </div>
 
                             <div className= "cards-container">
                                 {list.cards.map(card => (
