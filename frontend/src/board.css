@@ -207,32 +207,34 @@
     flex-shrink: 0;
 }
 
-/* "Boards" centered in the sidebar, icon pinned left on the same line */
+/* top row of the sidebar, just the open/close icon */
 .header {
-    position: relative;
     display: flex;
     align-items: center;
-    justify-content: center;
 
     min-height: 32px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .header img {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-
     display: block;
     width: 25px;
     height: auto;
     cursor: pointer;
 }
 
-.header h2 {
-    margin: 0;
+/* "Boards" sub heading on its own line, left aligned */
+.sidebar .sidebar-subheading {
+    margin: 0 0 8px;
+    padding-left: 12px;
+
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     line-height: 1;
+
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .board-header {
@@ -471,4 +473,9 @@
     display: flex;
     gap: 8px;
     margin-top: 8px;
+}
+
+/* space between the open/close icon and the boards section */
+.sidebar-content {
+    padding-top: 16px;
 }
