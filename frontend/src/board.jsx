@@ -58,6 +58,8 @@
 
     const [showAccountMenu, setShowAccountMenu] = useState(false);
 
+    const [boardMenuId, setBoardMenuId] = useState(null);
+
     const navigate = useNavigate();
 
     const [showMembersModal, setShowMembersModal] = useState(false);
@@ -124,9 +126,9 @@
         navigate("/");
     };
 
-    const getMembers = async () => {
+    const getMembers = async (boardId = selectedBoard.id) => {
 
-        const response = await fetch(`http://localhost:3000/boards/${selectedBoard.id}/members`, {
+        const response = await fetch(`http://localhost:3000/boards/${boardId}/members`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -139,10 +141,40 @@
         setMembers(data.members);
     };
 
-    const openMembersModal = async () => {
+    // board defaults to the one currently open, the sidebar menu passes its own board
+    const openMembersModal = async (board = selectedBoard) => {
         setMemberError("");
         setShowMembersModal(true);
-        await getMembers();
+        await getMembers(board.id);
+    };
+
+    const deleteBoard = async (board) => {
+
+        if (!window.confirm(`Delete "${board.title}" and all of its lists and cards?`)) {
+            return;
+        }
+
+        const response = await fetch(`http://localhost:3000/boards/${board.id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message);
+            return;
+        }
+
+        setBoards((currentBoards) => currentBoards.filter((b) => b.id !== board.id));
+
+        // close the board if it was the one open
+        if (selectedBoard?.id === board.id) {
+            setSelectedBoard(null);
+            setLists([]);
+        }
     };
 
     const inviteMember = async (e) => {
@@ -524,19 +556,61 @@
                         {sideBarOpen && (
                             boards.map((board) => (
                         
-                            <button
+                            <div
                             key={board.id}
-                            type="button"
-                            className={`sidebar-button ${selectedBoard?.id === board.id ? "selected" : ""}`}
-                            onClick={() => {
-                                setSelectedBoard(board);
-                                getList(board);
-                            }}
+                            className={`sidebar-item ${boardMenuId === board.id ? "menu-open" : ""}`}
                             >
-                            
-                            {board.title}
 
-                            </button>
+                                <button
+                                type="button"
+                                className={`sidebar-button ${selectedBoard?.id === board.id ? "selected" : ""}`}
+                                onClick={() => {
+                                    setSelectedBoard(board);
+                                    getList(board);
+                                }}
+                                >
+
+                                {board.title}
+
+                                </button>
+
+                                {/* three dots, only visible on hover */}
+                                <div className="board-menu-container"
+                                tabIndex={0}
+                                onBlur={(e) => {
+                                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                                        setBoardMenuId(null);
+                                    }
+                                }}
+                                >
+
+                                    <button className="board-menu-button" type="button"
+                                    onClick={() => setBoardMenuId(boardMenuId === board.id ? null : board.id)}
+                                    >⋮
+                                    </button>
+
+                                    {boardMenuId === board.id && (
+                                        <div className="board-menu">
+                                            <button onClick={() => {
+                                                setBoardMenuId(null);
+                                                setSelectedBoard(board);
+                                                getList(board);
+                                                openMembersModal(board);
+                                            }}>
+                                                Members
+                                            </button>
+                                            <button className="danger" onClick={() => {
+                                                setBoardMenuId(null);
+                                                deleteBoard(board);
+                                            }}>
+                                                Delete board
+                                            </button>
+                                        </div>
+                                    )}
+
+                                </div>
+
+                            </div>
 
                             ))
                     )}
@@ -553,10 +627,6 @@
                 
                 <div className="board-header">
                     <h2>{selectedBoard.title}</h2>
-
-                    <button onClick={openMembersModal}>
-                        Members
-                    </button>
                 </div>
                 
                 <div className="lists-container">

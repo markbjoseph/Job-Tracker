@@ -126,4 +126,25 @@ const removeMember = async (req, res) => {
     res.status(200).json({ message: "Member removed" });
 };
 
-module.exports = { getBoards, createBoard, updateBoard, getMembers, addMember, removeMember };
+const deleteBoard = async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const board = await prisma.board.findUnique({ where: { id } });
+
+    // only the owner can delete a board
+    if (!board || board.ownerId !== req.user.userId) {
+        return res.status(403).json({ message: "Only the board owner can delete this board" });
+    }
+
+    // cards and lists aren't set to cascade, so delete them first
+    // (BoardMember rows cascade automatically when the board is deleted)
+    await prisma.$transaction([
+        prisma.card.deleteMany({ where: { list: { boardId: id } } }),
+        prisma.list.deleteMany({ where: { boardId: id } }),
+        prisma.board.delete({ where: { id } })
+    ]);
+
+    res.status(200).json(board);
+};
+
+module.exports = { getBoards, createBoard, updateBoard, getMembers, addMember, removeMember, deleteBoard };

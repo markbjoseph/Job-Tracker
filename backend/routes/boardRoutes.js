@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const {getBoards, createBoard, updateBoard, getMembers, addMember, removeMember} = require("../controllers/boardController");
+const {getBoards, createBoard, updateBoard, getMembers, addMember, removeMember, deleteBoard} = require("../controllers/boardController");
 const authToken = require("../middleware/authToken");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -22,8 +22,6 @@ router.post("/boards/:id/members", authToken, authMiddleware, addMember);
 router.delete("/boards/:id/members/:userId", authToken, authMiddleware, removeMember);
 
 // Delete board
-router.delete("/boards/:id", authToken, authMiddleware, (req, res) => {
-    res.send(`Delete board ${req.params.id}`);
-});
+router.delete("/boards/:id", authToken, authMiddleware, deleteBoard);
 
 module.exports = router;
