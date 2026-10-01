@@ -472,3 +472,29 @@
     gap: 8px;
     margin-top: 8px;
 }
+
+/* temporary card shown while adding a new card */
+/* existing cards are <button>s, so copy the browser's default button look */
+.card.new-card {
+    box-sizing: border-box;
+
+    /* same border as the other cards (.editable would otherwise make the corners 4px) */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+    background-color: ButtonFace;
+    color: ButtonText;
+    font-family: Arial, sans-serif;
+    font-size: 13.333px;
+
+    /* buttons use a normal line height, divs inherit the page's taller 145% one */
+    line-height: normal;
+
+    cursor: text;
+    outline: none;
+}
+
+/* keep the same background on hover instead of the editable highlight */
+.card.new-card:hover {
+    background-color: ButtonFace;
+}

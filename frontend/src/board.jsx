@@ -28,11 +28,10 @@
     const [selectedList, setSelectedList] = useState(false);
 
 
-    const [addCardModal, setAddCardModal] = useState(false);
+    // id of the list currently showing the temporary "new card"
+    const [addingCardListId, setAddingCardListId] = useState(null);
 
-    const [newCardTitle, setNewCardTitle] = useState("");
 
-    const [newCardDescription, setNewCardDescription] = useState("");
 
 
 
@@ -231,8 +230,17 @@
         await getMembers();
     };
 
-    const createCard = async (e) => {
-        e.preventDefault();
+    const createCard = async (listId, e) => {
+
+        const newCardTitle = e.target.innerText.trim();
+
+        // hide the temporary card either way
+        setAddingCardListId(null);
+
+        // left empty, nothing to save
+        if (!newCardTitle) {
+            return;
+        }
 
         const response = await fetch("http://localhost:3000/cards", {
             method: "POST",
@@ -240,17 +248,13 @@
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
                 "Content-Type": "application/json" 
             }, 
-            body: JSON.stringify({title: newCardTitle, description: newCardDescription, listId: selectedList})
+            body: JSON.stringify({title: newCardTitle, description: "", listId})
         });
 
         const data = await response.json();
         console.log(data);
 
-        setAddCardModal(false);
-
         await getList(selectedBoard);
-
-        
     }
 
     const updateBoard = async (e) => {
@@ -1006,20 +1010,45 @@
                                     </div>
 
                             ))}
+
+                                {/* temporary card, type the title straight into it */}
+                                {addingCardListId === list.id && (
+                                    <div
+                                    className="card new-card editable"
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    data-placeholder="Enter a title for this card..."
+                                    ref={(el) => el && el.focus()}
+                                    onBlur={(e) => createCard(list.id, e)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            e.target.blur();
+                                        }
+
+                                        // escape cancels without saving
+                                        if (e.key === "Escape") {
+                                            e.target.innerText = "";
+                                            e.target.blur();
+                                        }
+                                    }}
+                                    />
+                                )}
+
                             </div>
 
                                 {draggedCard && list.cards.length === 0 && emptyListDrop === list.id && (
                                     <div className="drop-indicator"></div>
                                     )}
                         
-                            <button 
-                            className="add-card"
-                            onClick={() => {
-                                setAddCardModal(true)
-                                setSelectedList(list.id)
-                            }}>
-                                Add a Card + 
-                            </button>
+                            {addingCardListId !== list.id && (
+                                <button 
+                                className="add-card"
+                                onClick={() => setAddingCardListId(list.id)}
+                                >
+                                    Add a Card + 
+                                </button>
+                            )}
 
     
 
@@ -1255,39 +1284,6 @@
                     </button>
 
                 </form>
-            </div>
-        </div>
-    )}
-
-    {addCardModal && (
-        <div className="modal-overlay">
-            <div className="modal">
-
-                <button onClick={() => setAddCardModal(false)}>
-                    Close
-                </button>
-
-                <form onSubmit={createCard}>
-
-                    <input 
-                    type="text"
-                    value={newCardTitle}
-                    onChange={(e) => setNewCardTitle(e.target.value)}
-                    placeholder="Enter a Title"
-                    />          
-
-                    <input 
-                    type="text"
-                    value={newCardDescription}
-                    onChange={(e) => setNewCardDescription(e.target.value)}
-                    placeholder="Enter a Description"
-                    />  
-
-                    <button type="submit">
-                        Add
-                    </button>
-
-                </form>      
             </div>
         </div>
     )}
