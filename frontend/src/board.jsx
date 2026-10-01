@@ -1,6 +1,7 @@
     import React, { useEffect, useState } from "react";
     import "./board.css";
     import sidebarIcon from "./assets/sidebarIcon.svg"
+    import { useNavigate } from "react-router-dom";
 
     function Board() {
 
@@ -54,6 +55,10 @@
     const [selectedButton, setSelectedButton] = useState("Boards")
 
     const [sideBarOpen, setSideBarOpen] = useState(true);
+
+    const [showAccountMenu, setShowAccountMenu] = useState(false);
+
+    const navigate = useNavigate();
 
     const [showMembersModal, setShowMembersModal] = useState(false);
 
@@ -111,6 +116,12 @@
         setTitle("");
 
         await getBoards();
+    };
+
+    // clear the saved login and go back to the login page
+    const switchAccounts = () => {
+        localStorage.removeItem("token");
+        navigate("/");
     };
 
     const getMembers = async () => {
@@ -464,6 +475,34 @@
 
     return (
         <div>
+
+            {/* account icon, top right */}
+            <div className="account-container"
+            tabIndex={0}
+            onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) {
+                    setShowAccountMenu(false);
+                }
+            }}
+            >
+
+                <button className="account-button" type="button" aria-label="Account"
+                onClick={() => setShowAccountMenu(!showAccountMenu)}
+                >
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
+                    </svg>
+                </button>
+
+                {showAccountMenu && (
+                    <div className="account-menu">
+                        <button onClick={switchAccounts}>Switch accounts</button>
+                        <button onClick={switchAccounts}>Log out</button>
+                    </div>
+                )}
+
+            </div>
                                         
                     {/* sidebar */}
 
