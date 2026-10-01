@@ -464,6 +464,9 @@
         
         console.log(data);
 
+        setTitle("");
+        setShowTextList(false);
+
         await getList(selectedBoard)
     };
 
@@ -1068,30 +1071,48 @@
 
                     </React.Fragment>
                     ))}
-                </div>
 
-                {!showTextList && (
-                    <button onClick={() => setShowTextList(true)}>
-                        Add Another List
-                    </button>
-                )}
-                
-                {showTextList && (
-                <div>
-                    
-                    <input type="text" 
-                    placeholder="Enter list title"
-                    onChange={(e) => setTitle(e.target.value)}
-                    value={title}
-                     />
+                    {/* add a list, sits after the last list */}
+                    <div className="add-list">
 
-                    <form onSubmit={createList}>
-                        <button type="submit">
-                            Add List
-                        </button>
-                    </form>
+                        {!showTextList ? (
+                            <button
+                            type="button"
+                            className="add-list-button"
+                            onClick={() => setShowTextList(true)}
+                            >
+                                + Add another list
+                            </button>
+                        ) : (
+                            <form onSubmit={createList}>
+
+                                <input
+                                type="text"
+                                placeholder="Enter list title"
+                                onChange={(e) => setTitle(e.target.value)}
+                                value={title}
+                                autoFocus
+                                required
+                                />
+
+                                <div className="add-list-actions">
+                                    <button type="submit">
+                                        Add List
+                                    </button>
+
+                                    <button type="button" onClick={() => {
+                                        setShowTextList(false);
+                                        setTitle("");
+                                    }}>
+                                        Cancel
+                                    </button>
+                                </div>
+
+                            </form>
+                        )}
+
+                    </div>
                 </div>
-                )}
 
             </div>
         )}

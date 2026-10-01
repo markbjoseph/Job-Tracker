@@ -424,3 +424,46 @@
 .sidebar-button.add-board:hover {
     color: white;
 }
+
+/* "+ Add another list" column after the last list */
+.add-list {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.add-list-button {
+    width: 100%;
+    padding: 12px 15px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: rgba(0, 0, 0, 0.06);
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.add-list-button:hover {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+.add-list form {
+    padding: 10px;
+
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f4f4f4;
+}
+
+.add-list input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.add-list-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
