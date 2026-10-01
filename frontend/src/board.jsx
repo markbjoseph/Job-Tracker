@@ -60,6 +60,10 @@
 
     const [boardMenuId, setBoardMenuId] = useState(null);
 
+    const [addBoardModal, setAddBoardModal] = useState(false);
+
+    const [newBoardTitle, setNewBoardTitle] = useState("");
+
     const navigate = useNavigate();
 
     const [showMembersModal, setShowMembersModal] = useState(false);
@@ -107,7 +111,7 @@
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ title })
+            body: JSON.stringify({ title: newBoardTitle })
 
         });
 
@@ -115,9 +119,14 @@
         
         console.log(data);
 
-        setTitle("");
+        setNewBoardTitle("");
+        setAddBoardModal(false);
 
         await getBoards();
+
+        // open the board that was just made
+        setSelectedBoard(data);
+        getList(data);
     };
 
     // clear the saved login and go back to the login page
@@ -614,6 +623,16 @@
 
                             ))
                     )}
+
+                        {sideBarOpen && (
+                            <button
+                            type="button"
+                            className="sidebar-button add-board"
+                            onClick={() => setAddBoardModal(true)}
+                            >
+                                Add a Board +
+                            </button>
+                        )}
 
                         
 
@@ -1187,6 +1206,34 @@
                 </form>
 
                 {memberError && <p className="member-error">{memberError}</p>}
+            </div>
+        </div>
+    )}
+
+    {addBoardModal && (
+        <div className="modal-overlay">
+            <div className="modal">
+
+                <button onClick={() => setAddBoardModal(false)}>
+                    Close
+                </button>
+
+                <form onSubmit={createBoard}>
+
+                    <input
+                    type="text"
+                    value={newBoardTitle}
+                    onChange={(e) => setNewBoardTitle(e.target.value)}
+                    placeholder="Enter a Board Title"
+                    autoFocus
+                    required
+                    />
+
+                    <button type="submit">
+                        Add
+                    </button>
+
+                </form>
             </div>
         </div>
     )}

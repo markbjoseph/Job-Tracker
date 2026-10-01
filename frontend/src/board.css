@@ -207,19 +207,32 @@
     flex-shrink: 0;
 }
 
+/* "Boards" centered in the sidebar, icon pinned left on the same line */
 .header {
     position: relative;
     display: flex;
-    gap: 20px;
     align-items: center;
     justify-content: center;
+
+    min-height: 32px;
+    margin-bottom: 20px;
 }
 
 .header img {
     position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: block;
     width: 25px;
     height: auto;
-    left: 0;
+    cursor: pointer;
+}
+
+.header h2 {
+    margin: 0;
+    line-height: 1;
 }
 
 .board-header {
@@ -400,4 +413,14 @@
 
 .board-menu button.danger {
     color: #d33;
+}
+
+/* "Add a Board +" button at the bottom of the sidebar list */
+.sidebar-button.add-board {
+    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.sidebar-button.add-board:hover {
+    color: white;
 }
