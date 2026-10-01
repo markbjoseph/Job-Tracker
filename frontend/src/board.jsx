@@ -564,10 +564,14 @@
                         alt="sidebarIcon" 
                         onClick={() => setSideBarOpen(!sideBarOpen)}
                         />
-                        
-                        {sideBarOpen && <h2> Boards </h2>}
 
                         </div>
+
+                        {/* everything below the open/close icon */}
+                        <div className="sidebar-content">
+
+                        {/* section title under the icon */}
+                        {sideBarOpen && <h2 className="sidebar-subheading">Boards</h2>}
 
                         {sideBarOpen && (
                             boards.map((board) => (
@@ -640,6 +644,8 @@
                                 Add a Board +
                             </button>
                         )}
+
+                        </div>
 
                         
 
