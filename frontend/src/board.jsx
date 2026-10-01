@@ -9,7 +9,6 @@
 
     //variables
     const [title, setTitle] = useState("");
-    const [updateTitle, setUpdateTitle] = useState("");
 
     //stores the list of boards, lists, and cards retrieved from the backend
     const [boards, setBoards] = useState([]);
@@ -258,7 +257,14 @@
     }
 
     const updateBoard = async (e) => {
-        e.preventDefault();
+
+        const boardTitle = e.target.innerText.trim();
+
+        // nothing changed (or left empty), put the old title back and skip saving
+        if (!boardTitle || boardTitle === selectedBoard.title) {
+            e.target.innerText = selectedBoard.title;
+            return;
+        }
 
         //sends a PUT request to the backend
         const response = await fetch(`http://localhost:3000/boards/${selectedBoard.id}`, {
@@ -267,13 +273,27 @@
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ title:updateTitle })
+            body: JSON.stringify({ title: boardTitle })
 
         });
 
         const data = await response.json();
         
         console.log(data);
+
+        if (!response.ok) {
+            e.target.innerText = selectedBoard.title;
+            return;
+        }
+
+        // update the open board and its name in the sidebar
+        setSelectedBoard(data);
+
+        setBoards((currentBoards) =>
+            currentBoards.map((board) =>
+                board.id === data.id ? data : board
+            )
+        );
     };
 
     const updateList = async (list, e) => {
@@ -658,7 +678,24 @@
             <div className={`main-content ${sideBarOpen ? "sidebar-open" : "sidebar-closed"}`}>
                 
                 <div className="board-header">
-                    <h2>{selectedBoard.title}</h2>
+
+                    {/* edit the board title in place, saves when clicking away */}
+                    <h2
+                    key={`board-title-${selectedBoard.id}-${selectedBoard.title}`}
+                    className="editable"
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={updateBoard}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            e.target.blur();
+                        }
+                    }}
+                    >
+                        {selectedBoard.title}
+                    </h2>
+
                 </div>
                 
                 <div className="lists-container">
