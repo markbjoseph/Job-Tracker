@@ -1299,24 +1299,63 @@
 
     {showMembersModal && (
         <div className="modal-overlay">
-            <div className="modal">
+            <div className="modal share-modal">
 
-                <button onClick={() => setShowMembersModal(false)}>
-                    Close
-                </button>
+                {/* title on the left, close on the top right */}
+                <div className="share-header">
+                    <h2>Share board</h2>
 
-                <h2>Members</h2>
+                    <button
+                    type="button"
+                    className="share-close"
+                    aria-label="Close"
+                    onClick={() => setShowMembersModal(false)}
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <form className="share-form" onSubmit={inviteMember}>
+
+                    <input
+                    type="email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    placeholder="Enter an email to invite"
+                    required
+                    />
+
+                    <button type="submit">
+                        Share
+                    </button>
+
+                </form>
+
+                {memberError && <p className="member-error">{memberError}</p>}
+
+                <h3 className="members-heading">Members</h3>
 
                 <ul className="members-list">
+
+                    {/* column labels */}
+                    <li className="members-columns">
+                        <span>Username</span>
+                        <span>Email</span>
+                        <span></span>
+                    </li>
+
                     {boardOwner && (
                         <li>
-                            {boardOwner.username} ({boardOwner.email}) - Owner
+                            <span>{boardOwner.username}</span>
+                            <span className="member-email">{boardOwner.email}</span>
+                            <span className="member-role">Owner</span>
                         </li>
                     )}
 
                     {members.map((member) => (
                         <li key={member.id}>
-                            {member.username} ({member.email})
+                            <span>{member.username}</span>
+                            <span className="member-email">{member.email}</span>
 
                             <button onClick={() => removeMember(member.id)}>
                                 Remove
@@ -1324,23 +1363,6 @@
                         </li>
                     ))}
                 </ul>
-
-                <form onSubmit={inviteMember}>
-
-                    <input
-                    type="email"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder="Enter an email to invite"
-                    />
-
-                    <button type="submit">
-                        Invite
-                    </button>
-
-                </form>
-
-                {memberError && <p className="member-error">{memberError}</p>}
             </div>
         </div>
     )}

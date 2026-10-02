@@ -552,3 +552,125 @@
     cursor: text;
     outline: none;
 }
+
+/* share board pop-up, same dark colour as the sidebar */
+.modal.share-modal {
+    background: #333;
+    color: white;
+}
+
+.share-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.share-header h2 {
+    margin: 0;
+    color: white;
+}
+
+.share-close {
+    width: 32px;
+    height: 32px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.share-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.share-form {
+    display: flex;
+    gap: 8px;
+}
+
+.share-form input {
+    flex: 1;
+    padding: 10px;
+
+    border: 1px solid #555;
+    border-radius: 6px;
+
+    background-color: #444;
+    color: white;
+}
+
+.share-form input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.share-form button,
+.share-modal .members-list button {
+    padding: 8px 14px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    cursor: pointer;
+}
+
+.share-form button:hover,
+.share-modal .members-list button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.share-modal .members-heading {
+    margin: 24px 0 8px;
+
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.share-modal .members-list {
+    margin: 0;
+}
+
+/* each member row: username | email | owner label or remove button */
+.share-modal .members-list li {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 90px;
+    align-items: center;
+    gap: 12px;
+}
+
+.share-modal .members-list li > :last-child {
+    justify-self: end;
+}
+
+/* small labels above the username and email columns */
+.share-modal .members-columns {
+    padding-bottom: 4px;
+    border-bottom: 1px solid #444;
+
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.share-modal .member-email {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.share-modal .member-role {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.share-modal .member-error {
+    color: #ff6b6b;
+}
