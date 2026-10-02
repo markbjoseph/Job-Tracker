@@ -4,6 +4,9 @@
     align-items: flex-start;
     overflow-x: auto;
     padding: 10px;
+
+    /* more space between the lists and the board title / sidebar icon */
+    padding-top: 30px;
 }
 
 .list {
@@ -70,11 +73,13 @@
 
     box-sizing: border-box;
 
-    transition: width 0.3s ease;
+    transition: width 0.3s ease, background-color 0.3s ease;
 }
 
+/* fully closed: no dark background, only the open/close icon is left */
 .sidebar.sidebar-closed {
     width: 65px;
+    background-color: transparent;
 }
 
 .sidebar.sidebar-open {
@@ -123,8 +128,9 @@
     margin-left: 220px;
 }
 
+/* closed: lists and board title use the full width */
 .main-content.sidebar-closed {
-    margin-left: 65px;
+    margin-left: 0;
 }
 
 .list-header {
@@ -216,11 +222,19 @@
     margin-bottom: 16px;
 }
 
-.header img {
+.sidebar-toggle {
     display: block;
     width: 25px;
-    height: auto;
+    height: 25px;
     cursor: pointer;
+
+    /* the lines use this colour: black over the page, white on the dark open sidebar */
+    color: black;
+    transition: color 0.3s ease;
+}
+
+.sidebar.sidebar-open .sidebar-toggle {
+    color: white;
 }
 
 /* "Boards" sub heading on its own line, left aligned */
@@ -237,10 +251,21 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* board title on its own row under the sidebar and account icons */
 .board-header {
     display: flex;
     align-items: center;
     gap: 12px;
+
+    /* clears the icons along the top (account icon ends at 56px) */
+    margin-top: 50px;
+
+    /* same as .lists-container's padding so the title lines up with the first list */
+    padding-left: 10px;
+}
+
+.board-header h2 {
+    margin: 0;
 }
 
 .members-list {
@@ -347,6 +372,9 @@
     position: relative;
     display: flex;
     align-items: center;
+
+    /* space between each board in the sidebar */
+    margin-bottom: 6px;
 }
 
 .board-menu-container {
@@ -504,4 +532,23 @@
 /* keep the same background on hover instead of the editable highlight */
 .card.new-card:hover {
     background-color: ButtonFace;
+}
+
+/* temporary board row shown while adding a new board */
+/* the other boards are <button>s, so copy the browser's default button text */
+.sidebar-button.new-board {
+    box-sizing: border-box;
+
+    /* same shape as the other boards (.editable would otherwise make the corners 4px) */
+    border-radius: 16px;
+
+    background-color: rgba(255, 255, 255, 0.1);
+    color: ButtonText;
+    font-family: Arial, sans-serif;
+
+    /* buttons use a normal line height, divs inherit the page's taller 145% one */
+    line-height: normal;
+
+    cursor: text;
+    outline: none;
 }

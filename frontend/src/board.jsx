@@ -1,6 +1,5 @@
     import React, { useEffect, useState } from "react";
     import "./board.css";
-    import sidebarIcon from "./assets/sidebarIcon.svg"
     import { useNavigate } from "react-router-dom";
 
     function Board() {
@@ -58,9 +57,9 @@
 
     const [boardMenuId, setBoardMenuId] = useState(null);
 
-    const [addBoardModal, setAddBoardModal] = useState(false);
+    // true while the temporary "new board" row is showing in the sidebar
+    const [addingBoard, setAddingBoard] = useState(false);
 
-    const [newBoardTitle, setNewBoardTitle] = useState("");
 
     const navigate = useNavigate();
 
@@ -100,7 +99,16 @@
     }, []);
 
     const createBoard = async (e) => {
-        e.preventDefault();
+
+        const newBoardTitle = e.target.innerText.trim();
+
+        // hide the temporary row either way
+        setAddingBoard(false);
+
+        // left empty, nothing to save
+        if (!newBoardTitle) {
+            return;
+        }
 
         //sends a POST request to the backend
         const response = await fetch("http://localhost:3000/boards", {
@@ -116,9 +124,6 @@
         const data = await response.json();
         
         console.log(data);
-
-        setNewBoardTitle("");
-        setAddBoardModal(false);
 
         await getBoards();
 
@@ -579,11 +584,22 @@
 
                         <div className="header">
 
-                        <img 
-                        src={sidebarIcon} 
-                        alt="sidebarIcon" 
+                        {/* open/close icon, three horizontal lines */}
+                        <svg
+                        className="sidebar-toggle"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        role="button"
+                        aria-label="Toggle sidebar"
                         onClick={() => setSideBarOpen(!sideBarOpen)}
-                        />
+                        >
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
 
                         </div>
 
@@ -655,11 +671,37 @@
                             ))
                     )}
 
-                        {sideBarOpen && (
+                        {/* temporary board row, type the name straight into it */}
+                        {sideBarOpen && addingBoard && (
+                            <div className="sidebar-item">
+                                <div
+                                className="sidebar-button new-board editable"
+                                contentEditable
+                                suppressContentEditableWarning
+                                data-placeholder="Enter a board name..."
+                                ref={(el) => el && el.focus()}
+                                onBlur={createBoard}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        e.target.blur();
+                                    }
+
+                                    // escape cancels without saving
+                                    if (e.key === "Escape") {
+                                        e.target.innerText = "";
+                                        e.target.blur();
+                                    }
+                                }}
+                                />
+                            </div>
+                        )}
+
+                        {sideBarOpen && !addingBoard && (
                             <button
                             type="button"
                             className="sidebar-button add-board"
-                            onClick={() => setAddBoardModal(true)}
+                            onClick={() => setAddingBoard(true)}
                             >
                                 Add a Board +
                             </button>
@@ -1299,34 +1341,6 @@
                 </form>
 
                 {memberError && <p className="member-error">{memberError}</p>}
-            </div>
-        </div>
-    )}
-
-    {addBoardModal && (
-        <div className="modal-overlay">
-            <div className="modal">
-
-                <button onClick={() => setAddBoardModal(false)}>
-                    Close
-                </button>
-
-                <form onSubmit={createBoard}>
-
-                    <input
-                    type="text"
-                    value={newBoardTitle}
-                    onChange={(e) => setNewBoardTitle(e.target.value)}
-                    placeholder="Enter a Board Title"
-                    autoFocus
-                    required
-                    />
-
-                    <button type="submit">
-                        Add
-                    </button>
-
-                </form>
             </div>
         </div>
     )}
