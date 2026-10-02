@@ -335,7 +335,7 @@
     top: calc(100% + 8px);
     right: 0;
 
-    min-width: 180px;
+    min-width: 240px;
 
     display: flex;
     flex-direction: column;
@@ -673,4 +673,77 @@
 
 .share-modal .member-error {
     color: #ff6b6b;
+}
+
+/* "Accounts" heading at the top of the account menu */
+.account-menu-heading {
+    margin: 4px 12px 8px;
+
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* logged in user: icon with username and email */
+.account-current {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+}
+
+.account-avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background-color: #555;
+    color: white;
+}
+
+.account-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.account-username {
+    color: white;
+    font-size: 15px;
+}
+
+.account-email {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account-divider {
+    height: 1px;
+    margin: 8px 0;
+    background-color: #444;
+}
+
+/* profile picture filling the round account icon / menu avatar */
+.account-button,
+.account-avatar {
+    overflow: hidden;
+    padding: 0;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

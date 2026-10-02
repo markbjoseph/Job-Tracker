@@ -6,7 +6,9 @@ const express = require("express");
 const router = express.Router();
 
 //goes to the authController.js file and imports the register and login functions
-const { register, login } = require("../controllers/authController");
+const { register, login, getMe, updateMe, updatePassword, getDevices } = require("../controllers/authController");
+const authToken = require("../middleware/authToken");
+const authMiddleware = require("../middleware/authMiddleware");
 
 // Register
 
@@ -47,5 +49,17 @@ router.post("/register", register);
 
 // Login
 router.post("/login", login);
+
+// Get the logged in user's username and email
+router.get("/me", authToken, authMiddleware, getMe);
+
+// Update the logged in user's username and email
+router.put("/me", authToken, authMiddleware, updateMe);
+
+// Change the logged in user's password
+router.put("/me/password", authToken, authMiddleware, updatePassword);
+
+// The logged in user's recent logins (browser, IP, time)
+router.get("/me/devices", authToken, authMiddleware, getDevices);
 
 module.exports = router;
