@@ -14,12 +14,14 @@ const authRoutes = require("./routes/authRoutes");
 const boardRoutes = require("./routes/boardRoutes");
 const listRoutes = require("./routes/listRoutes");
 const cardRoutes = require("./routes/cardRoutes");
+const workspaceRoutes = require("./routes/workspaceRoutes");
 
 // Check routes
 app.use(authRoutes);
 app.use(boardRoutes);
 app.use(listRoutes);
 app.use(cardRoutes);
+app.use(workspaceRoutes);
 
 app.listen(3000, () => {
     console.log("Server running on port 3000");

@@ -2,8 +2,9 @@ import Login from "./login";
 import Registration from "./registration";
 import Board from "./board";
 import Account from "./account";
+import Workspaces from "./workspace";
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 
 
@@ -14,7 +15,12 @@ function App() {
 
                 <Route path="/" element={<Login />} />
                 <Route path="/registration" element={<Registration />} />
-                <Route path="/board" element={<Board />} />
+                {/* workspaces are the first page after login, each one opens its boards */}
+                <Route path="/workspaces" element={<Workspaces />} />
+                <Route path="/workspaces/:workspaceId" element={<Board />} />
+
+                {/* old link, boards now live inside a workspace */}
+                <Route path="/board" element={<Navigate to="/workspaces" replace />} />
                 <Route path="/account" element={<Account />} />
 
             </Routes>

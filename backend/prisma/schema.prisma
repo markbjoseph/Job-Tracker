@@ -23,7 +23,8 @@ model User {
   avatar    String?   // profile picture as a small data URL, null = default icon
 
   boards    Board[]
-  memberships BoardMember[]
+  workspaces  Workspace[]
+  workspaceMemberships WorkspaceMember[]
   loginEvents LoginEvent[]
 
   createdAt DateTime @default(now())
@@ -36,8 +37,11 @@ model Board {
   ownerId   Int
   owner      User @relation(fields: [ownerId], references: [id])
 
+  // every board lives inside one workspace
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
   lists     List[]
-  members   BoardMember[]
 
   createdAt DateTime @default(now())
 }
@@ -63,18 +67,33 @@ model Card {
   list         List @relation(fields: [listId], references: [id])
 }
 
-model BoardMember {
+// a workspace holds many boards; sharing a workspace shares all of its boards
+model Workspace {
   id        Int      @id @default(autoincrement())
+  name      String
 
-  boardId   Int
-  board     Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  ownerId   Int
+  owner     User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  userId    Int
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  boards    Board[]
+  members   WorkspaceMember[]
 
   createdAt DateTime @default(now())
+}
 
-  @@unique([boardId, userId])
+// one row per person a workspace has been shared with
+model WorkspaceMember {
+  id          Int      @id @default(autoincrement())
+
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  userId      Int
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+
+  @@unique([workspaceId, userId])
 }
 
 // one row per successful login, used for "Recent devices" on the account page

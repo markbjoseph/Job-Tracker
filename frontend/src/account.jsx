@@ -230,8 +230,8 @@ function Account() {
 
             <div className="account-page-container">
 
-                <button className="account-back" onClick={() => navigate("/board")}>
-                    ← Back to boards
+                <button className="account-back" onClick={() => navigate("/workspaces")}>
+                    ← Back to workspaces
                 </button>
 
                 <h1>Account</h1>

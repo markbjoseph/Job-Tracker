@@ -1,0 +1,187 @@
+.workspaces-page {
+    min-height: 100vh;
+    padding: 32px 40px;
+    box-sizing: border-box;
+}
+
+.workspaces-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    margin-bottom: 28px;
+}
+
+.workspaces-header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.workspaces-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.workspaces-header-actions button {
+    padding: 8px 14px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #333;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.workspaces-header-actions button:hover {
+    background-color: #555;
+}
+
+.workspaces-error {
+    color: #d33;
+}
+
+/* tiles wrap onto new rows as the screen narrows */
+.workspaces-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+/* each workspace is a dark tile, same colour as the sidebar */
+.workspace-tile {
+    position: relative;
+    min-height: 120px;
+    padding: 18px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    border: none;
+    border-radius: 10px;
+
+    background-color: #333;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+.workspace-tile:hover {
+    background-color: #3d3d3d;
+}
+
+.workspace-tile-name {
+    font-size: 18px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.workspace-tile-details {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+}
+
+.workspace-tile-shared {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: 2px 8px;
+
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+}
+
+/* delete only shows when hovering an owned tile */
+.workspace-tile-delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+    color: #ff6b6b;
+    font-size: 12px;
+    cursor: pointer;
+
+    opacity: 0;
+}
+
+.workspace-tile:hover .workspace-tile-delete,
+.workspace-tile-delete:focus {
+    opacity: 1;
+}
+
+.workspace-tile-delete:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* "+ New workspace" tile */
+.workspace-new {
+    align-items: center;
+    justify-content: center;
+
+    background-color: transparent;
+    border: 2px dashed #bbb;
+    color: #555;
+    font-size: 16px;
+}
+
+.workspace-new:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.workspace-new-form {
+    cursor: default;
+    justify-content: center;
+}
+
+.workspace-new-form:hover {
+    background-color: #333;
+}
+
+.workspace-new-form input {
+    padding: 10px;
+
+    border: 1px solid #555;
+    border-radius: 6px;
+
+    background-color: #444;
+    color: white;
+    font-size: 15px;
+}
+
+.workspace-new-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.workspace-new-actions button {
+    padding: 6px 12px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    cursor: pointer;
+}
+
+.workspace-new-actions button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 600px) {
+    .workspaces-page {
+        padding: 24px 16px;
+    }
+}

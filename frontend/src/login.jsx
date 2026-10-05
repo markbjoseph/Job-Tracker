@@ -28,7 +28,7 @@ function Login() {
 
         if (response.ok) {
             //if login is successful, navigate to the board page
-            navigate("/board");
+            navigate("/workspaces");
         } else {
             //if login fails, display an error message
             alert(data.message);

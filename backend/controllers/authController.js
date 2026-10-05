@@ -16,6 +16,10 @@ const register = async (req, res) => {
             username,
             email,
             password: hashedPassword,
+            // every new user starts with one workspace to put boards in
+            workspaces: {
+                create: { name: "My Workspace" },
+            },
         },
     });
 

@@ -1,6 +1,6 @@
     import React, { useEffect, useState } from "react";
     import "./board.css";
-    import { useNavigate } from "react-router-dom";
+    import { useNavigate, useParams } from "react-router-dom";
 
     function Board() {
 
@@ -66,6 +66,11 @@
 
     const navigate = useNavigate();
 
+    // the workspace being viewed comes from the URL: /workspaces/:workspaceId
+    const { workspaceId } = useParams();
+
+    const [workspace, setWorkspace] = useState(null);
+
     const [showMembersModal, setShowMembersModal] = useState(false);
 
     const [boardOwner, setBoardOwner] = useState(null);
@@ -81,13 +86,19 @@
 
     const getBoards = async () => {
 
-        //sends a GET request to the backend
-        const response = await fetch("http://localhost:3000/boards", {
+        //sends a GET request to the backend for this workspace's boards
+        const response = await fetch(`http://localhost:3000/boards?workspaceId=${workspaceId}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
         });
+
+        // no access (or it was deleted), go back to the list of workspaces
+        if (!response.ok) {
+            navigate("/workspaces");
+            return;
+        }
 
         const data = await response.json();
 
@@ -115,10 +126,34 @@
         setCurrentUser(data);
     };
 
+    // workspace name for the sidebar
+    const getWorkspace = async () => {
+
+        const response = await fetch(`http://localhost:3000/workspaces/${workspaceId}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        setWorkspace(await response.json());
+    };
+
     useEffect(() => {
-        getBoards();
         getCurrentUser();
     }, []);
+
+    // reload when switching to a different workspace
+    useEffect(() => {
+        setSelectedBoard(null);
+        setLists([]);
+        getWorkspace();
+        getBoards();
+    }, [workspaceId]);
 
     const createBoard = async (e) => {
 
@@ -139,7 +174,7 @@
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ title: newBoardTitle })
+            body: JSON.stringify({ title: newBoardTitle, workspaceId })
 
         });
 
@@ -160,9 +195,10 @@
         navigate("/");
     };
 
-    const getMembers = async (boardId = selectedBoard.id) => {
+    // sharing is per workspace, so everyone listed here can see every board in it
+    const getMembers = async () => {
 
-        const response = await fetch(`http://localhost:3000/boards/${boardId}/members`, {
+        const response = await fetch(`http://localhost:3000/workspaces/${workspaceId}/members`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -175,11 +211,10 @@
         setMembers(data.members);
     };
 
-    // board defaults to the one currently open, the sidebar menu passes its own board
-    const openMembersModal = async (board = selectedBoard) => {
+    const openMembersModal = async () => {
         setMemberError("");
         setShowMembersModal(true);
-        await getMembers(board.id);
+        await getMembers();
     };
 
     const deleteBoard = async (board) => {
@@ -214,7 +249,7 @@
     const inviteMember = async (e) => {
         e.preventDefault();
 
-        const response = await fetch(`http://localhost:3000/boards/${selectedBoard.id}/members`, {
+        const response = await fetch(`http://localhost:3000/workspaces/${workspaceId}/members`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -239,7 +274,7 @@
 
     const removeMember = async (userId) => {
 
-        const response = await fetch(`http://localhost:3000/boards/${selectedBoard.id}/members/${userId}`, {
+        const response = await fetch(`http://localhost:3000/workspaces/${workspaceId}/members/${userId}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -624,8 +659,7 @@
                         <button onClick={switchAccounts}>Switch accounts</button>
                         <button onClick={() => navigate("/account")}>Manage Account</button>
 
-                        {/* not hooked up yet, will open the workspace settings page */}
-                        <button>Manage workspace</button>
+                        <button onClick={() => navigate("/workspaces")}>Manage workspace</button>
 
                         <div className="account-divider"></div>
 
@@ -663,6 +697,31 @@
 
                         {/* everything below the open/close icon */}
                         <div className="sidebar-content">
+
+                        {/* which workspace these boards belong to */}
+                        {sideBarOpen && (
+                            <div className="sidebar-workspace">
+                                <button
+                                type="button"
+                                className="sidebar-back"
+                                onClick={() => navigate("/workspaces")}
+                                >
+                                    ← Workspaces
+                                </button>
+
+                                <div className="sidebar-workspace-row">
+                                    <span className="sidebar-workspace-name">{workspace?.name}</span>
+
+                                    <button
+                                    type="button"
+                                    className="sidebar-share"
+                                    onClick={openMembersModal}
+                                    >
+                                        Share
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* section title under the icon */}
                         {sideBarOpen && <h2 className="sidebar-subheading">Boards</h2>}
@@ -705,14 +764,6 @@
 
                                     {boardMenuId === board.id && (
                                         <div className="board-menu">
-                                            <button onClick={() => {
-                                                setBoardMenuId(null);
-                                                setSelectedBoard(board);
-                                                getList(board);
-                                                openMembersModal(board);
-                                            }}>
-                                                Members
-                                            </button>
                                             <button className="danger" onClick={() => {
                                                 setBoardMenuId(null);
                                                 deleteBoard(board);
@@ -1361,7 +1412,7 @@
 
                 {/* title on the left, close on the top right */}
                 <div className="share-header">
-                    <h2>Share board</h2>
+                    <h2>Share workspace</h2>
 
                     <button
                     type="button"

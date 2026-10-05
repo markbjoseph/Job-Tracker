@@ -1,6 +1,24 @@
 const prisma = require("../thePrisma");
 
-// Returns the board if the user owns it or is a member of it, otherwise null
+// "the user owns this workspace or it has been shared with them"
+const workspaceAccess = (userId) => ({
+    OR: [
+        { ownerId: userId },
+        { members: { some: { userId } } }
+    ]
+});
+
+// Returns the workspace if the user owns it or is a member of it, otherwise null
+const canAccessWorkspace = async (userId, workspaceId) => {
+
+    if (!workspaceId) return null;
+
+    return prisma.workspace.findFirst({
+        where: { id: workspaceId, ...workspaceAccess(userId) }
+    });
+};
+
+// Returns the board if the user can access the workspace it's in, otherwise null
 const canAccessBoard = async (userId, boardId) => {
 
     if (!boardId) return null;
@@ -8,10 +26,7 @@ const canAccessBoard = async (userId, boardId) => {
     return prisma.board.findFirst({
         where: {
             id: boardId,
-            OR: [
-                { ownerId: userId },
-                { members: { some: { userId } } }
-            ]
+            workspace: workspaceAccess(userId)
         }
     });
 };
@@ -36,4 +51,4 @@ const canAccessCard = async (userId, cardId) => {
     return canAccessList(userId, card.listId);
 };
 
-module.exports = { canAccessBoard, canAccessList, canAccessCard };
+module.exports = { workspaceAccess, canAccessWorkspace, canAccessBoard, canAccessList, canAccessCard };
