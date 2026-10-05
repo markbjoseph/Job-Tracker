@@ -1,0 +1,139 @@
+/* account icon in the top right corner */
+.account-container {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 10;
+    outline: none;
+}
+
+.account-button {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+}
+
+.account-button:hover {
+    background-color: #555;
+}
+
+.account-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+
+    min-width: 240px;
+
+    display: flex;
+    flex-direction: column;
+
+    /* same dark background as the sidebar */
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    padding: 6px;
+}
+
+.account-menu button {
+    padding: 10px 12px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+    color: white;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* same hover as the sidebar buttons */
+
+.account-menu button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* "Accounts" heading at the top of the account menu */
+.account-menu-heading {
+    margin: 4px 12px 8px;
+
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* logged in user: icon with username and email */
+.account-current {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+}
+
+.account-avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background-color: #555;
+    color: white;
+}
+
+.account-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.account-username {
+    color: white;
+    font-size: 15px;
+}
+
+.account-email {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account-divider {
+    height: 1px;
+    margin: 8px 0;
+    background-color: #444;
+}
+
+/* profile picture filling the round account icon / menu avatar */
+.account-button,
+.account-avatar {
+    overflow: hidden;
+    padding: 0;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

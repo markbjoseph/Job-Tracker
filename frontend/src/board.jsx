@@ -1,5 +1,8 @@
     import React, { useEffect, useState } from "react";
     import "./board.css";
+    import AccountMenu from "./AccountMenu";
+    import ShareWorkspaceModal from "./ShareWorkspaceModal";
+    import "./modal.css";
     import { useNavigate, useParams } from "react-router-dom";
 
     function Board() {
@@ -53,10 +56,7 @@
 
     const [sideBarOpen, setSideBarOpen] = useState(true);
 
-    const [showAccountMenu, setShowAccountMenu] = useState(false);
 
-    // logged in user's username and email, shown in the account menu
-    const [currentUser, setCurrentUser] = useState(null);
 
     const [boardMenuId, setBoardMenuId] = useState(null);
 
@@ -73,13 +73,9 @@
 
     const [showMembersModal, setShowMembersModal] = useState(false);
 
-    const [boardOwner, setBoardOwner] = useState(null);
 
-    const [members, setMembers] = useState([]);
 
-    const [inviteEmail, setInviteEmail] = useState("");
 
-    const [memberError, setMemberError] = useState("");
 
 
     // ----------------------------------------------------------------------------
@@ -108,23 +104,6 @@
 
     };
 
-    const getCurrentUser = async () => {
-
-        const response = await fetch("http://localhost:3000/me", {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        });
-
-        if (!response.ok) {
-            return;
-        }
-
-        const data = await response.json();
-
-        setCurrentUser(data);
-    };
 
     // workspace name for the sidebar
     const getWorkspace = async () => {
@@ -142,10 +121,6 @@
 
         setWorkspace(await response.json());
     };
-
-    useEffect(() => {
-        getCurrentUser();
-    }, []);
 
     // reload when switching to a different workspace
     useEffect(() => {
@@ -189,33 +164,8 @@
         getList(data);
     };
 
-    // clear the saved login and go back to the login page
-    const switchAccounts = () => {
-        localStorage.removeItem("token");
-        navigate("/");
-    };
 
-    // sharing is per workspace, so everyone listed here can see every board in it
-    const getMembers = async () => {
 
-        const response = await fetch(`http://localhost:3000/workspaces/${workspaceId}/members`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        });
-
-        const data = await response.json();
-
-        setBoardOwner(data.owner);
-        setMembers(data.members);
-    };
-
-    const openMembersModal = async () => {
-        setMemberError("");
-        setShowMembersModal(true);
-        await getMembers();
-    };
 
     const deleteBoard = async (board) => {
 
@@ -246,50 +196,7 @@
         }
     };
 
-    const inviteMember = async (e) => {
-        e.preventDefault();
 
-        const response = await fetch(`http://localhost:3000/workspaces/${workspaceId}/members`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email: inviteEmail })
-        });
-
-        const data = await response.json();
-
-        // show the error from the backend, e.g. "User not found"
-        if (!response.ok) {
-            setMemberError(data.message);
-            return;
-        }
-
-        setMemberError("");
-        setInviteEmail("");
-
-        await getMembers();
-    };
-
-    const removeMember = async (userId) => {
-
-        const response = await fetch(`http://localhost:3000/workspaces/${workspaceId}/members/${userId}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            setMemberError(data.message);
-            return;
-        }
-
-        await getMembers();
-    };
 
     const createCard = async (listId, e) => {
 
@@ -607,67 +514,16 @@
         <div>
 
             {/* account icon, top right */}
-            <div className="account-container"
-            tabIndex={0}
-            onBlur={(e) => {
-                if (!e.currentTarget.contains(e.relatedTarget)) {
-                    setShowAccountMenu(false);
-                }
-            }}
+            <AccountMenu />
+
+            {/* share this workspace, next to the account icon */}
+            <button
+            type="button"
+            className="top-share"
+            onClick={() => setShowMembersModal(true)}
             >
-
-                <button className="account-button" type="button" aria-label="Account"
-                onClick={() => setShowAccountMenu(!showAccountMenu)}
-                >
-                    {/* profile picture if they have one, otherwise the default icon */}
-                    {currentUser?.avatar ? (
-                        <img className="avatar-image" src={currentUser.avatar} alt="Profile picture" />
-                    ) : (
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
-                        </svg>
-                    )}
-                </button>
-
-                {showAccountMenu && (
-                    <div className="account-menu">
-
-                        <p className="account-menu-heading">Account</p>
-
-                        {/* the logged in user */}
-                        {currentUser && (
-                            <div className="account-current">
-                                <div className="account-avatar">
-                                    {currentUser.avatar ? (
-                                        <img className="avatar-image" src={currentUser.avatar} alt="Profile picture" />
-                                    ) : (
-                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                            <circle cx="12" cy="8" r="4" />
-                                            <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
-                                        </svg>
-                                    )}
-                                </div>
-
-                                <div className="account-details">
-                                    <span className="account-username">{currentUser.username}</span>
-                                    <span className="account-email">{currentUser.email}</span>
-                                </div>
-                            </div>
-                        )}
-
-                        <button onClick={switchAccounts}>Switch accounts</button>
-                        <button onClick={() => navigate("/account")}>Manage Account</button>
-
-                        <button onClick={() => navigate("/workspaces")}>Manage workspace</button>
-
-                        <div className="account-divider"></div>
-
-                        <button onClick={switchAccounts}>Log out</button>
-                    </div>
-                )}
-
-            </div>
+                Share Workspace
+            </button>
                                         
                     {/* sidebar */}
 
@@ -693,6 +549,24 @@
                             <line x1="3" y1="18" x2="21" y2="18" />
                         </svg>
 
+                        {/* back to the list of all workspaces */}
+                        {sideBarOpen && (
+                            <button
+                            type="button"
+                            className="sidebar-icon-button"
+                            aria-label="Workspaces"
+                            title="Workspaces"
+                            onClick={() => navigate("/workspaces")}
+                            >
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+                                    <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                                    <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                                    <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                                    <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                                </svg>
+                            </button>
+                        )}
+
                         </div>
 
                         {/* everything below the open/close icon */}
@@ -701,33 +575,18 @@
                         {/* which workspace these boards belong to */}
                         {sideBarOpen && (
                             <div className="sidebar-workspace">
-                                <button
-                                type="button"
-                                className="sidebar-back"
-                                onClick={() => navigate("/workspaces")}
-                                >
-                                    ← Workspaces
-                                </button>
-
                                 <div className="sidebar-workspace-row">
                                     <span className="sidebar-workspace-name">{workspace?.name}</span>
-
-                                    <button
-                                    type="button"
-                                    className="sidebar-share"
-                                    onClick={openMembersModal}
-                                    >
-                                        Share
-                                    </button>
                                 </div>
                             </div>
                         )}
 
-                        {/* section title under the icon */}
+                        {/* section title */}
                         {sideBarOpen && <h2 className="sidebar-subheading">Boards</h2>}
 
                         {sideBarOpen && (
-                            boards.map((board) => (
+                            <div className="sidebar-board-list">
+                            {boards.map((board) => (
                         
                             <div
                             key={board.id}
@@ -777,11 +636,10 @@
 
                             </div>
 
-                            ))
-                    )}
+                            ))}
 
                         {/* temporary board row, type the name straight into it */}
-                        {sideBarOpen && addingBoard && (
+                        {addingBoard && (
                             <div className="sidebar-item">
                                 <div
                                 className="sidebar-button new-board editable"
@@ -806,7 +664,7 @@
                             </div>
                         )}
 
-                        {sideBarOpen && !addingBoard && (
+                        {!addingBoard && (
                             <button
                             type="button"
                             className="sidebar-button add-board"
@@ -814,6 +672,9 @@
                             >
                                 Add a Board +
                             </button>
+                        )}
+
+                            </div>
                         )}
 
                         </div>
@@ -1407,73 +1268,10 @@
     )}
 
     {showMembersModal && (
-        <div className="modal-overlay">
-            <div className="modal share-modal">
-
-                {/* title on the left, close on the top right */}
-                <div className="share-header">
-                    <h2>Share workspace</h2>
-
-                    <button
-                    type="button"
-                    className="share-close"
-                    aria-label="Close"
-                    onClick={() => setShowMembersModal(false)}
-                    >
-                        ✕
-                    </button>
-                </div>
-
-                <form className="share-form" onSubmit={inviteMember}>
-
-                    <input
-                    type="email"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder="Enter an email to invite"
-                    required
-                    />
-
-                    <button type="submit">
-                        Share
-                    </button>
-
-                </form>
-
-                {memberError && <p className="member-error">{memberError}</p>}
-
-                <h3 className="members-heading">Members</h3>
-
-                <ul className="members-list">
-
-                    {/* column labels */}
-                    <li className="members-columns">
-                        <span>Username</span>
-                        <span>Email</span>
-                        <span></span>
-                    </li>
-
-                    {boardOwner && (
-                        <li>
-                            <span>{boardOwner.username}</span>
-                            <span className="member-email">{boardOwner.email}</span>
-                            <span className="member-role">Owner</span>
-                        </li>
-                    )}
-
-                    {members.map((member) => (
-                        <li key={member.id}>
-                            <span>{member.username}</span>
-                            <span className="member-email">{member.email}</span>
-
-                            <button onClick={() => removeMember(member.id)}>
-                                Remove
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </div>
+        <ShareWorkspaceModal
+        workspaceId={workspaceId}
+        onClose={() => setShowMembersModal(false)}
+        />
     )}
 
         </div>

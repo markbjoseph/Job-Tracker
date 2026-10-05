@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./workspace.css";
+import AccountMenu from "./AccountMenu";
+import ShareWorkspaceModal from "./ShareWorkspaceModal";
 
 // first page after logging in: every workspace the user owns or has been invited to
 function Workspaces() {
@@ -15,6 +17,9 @@ function Workspaces() {
     const [newName, setNewName] = useState("");
 
     const [error, setError] = useState("");
+
+    // id of the workspace whose Share pop-up is open, null when closed
+    const [sharingId, setSharingId] = useState(null);
 
     const getWorkspaces = async () => {
 
@@ -103,23 +108,14 @@ function Workspaces() {
         setWorkspaces((current) => current.filter((w) => w.id !== workspace.id));
     };
 
-    const logOut = () => {
-        localStorage.removeItem("token");
-        navigate("/");
-    };
-
     return (
         <div className="workspaces-page">
 
+            {/* account icon, top right */}
+            <AccountMenu />
+
             <header className="workspaces-header">
                 <h1>Workspaces</h1>
-
-                <div className="workspaces-header-actions">
-                    <button onClick={() => navigate("/account")}>
-                        {currentUser ? currentUser.username : "Account"}
-                    </button>
-                    <button onClick={logOut}>Log out</button>
-                </div>
             </header>
 
             {error && <p className="workspaces-error">{error}</p>}
@@ -152,6 +148,18 @@ function Workspaces() {
                                     Shared by {workspace.owner.username}
                                 </span>
                             )}
+
+                            <button
+                            type="button"
+                            className="workspace-tile-share"
+                            onClick={(e) => {
+                                // don't also open the workspace
+                                e.stopPropagation();
+                                setSharingId(workspace.id);
+                            }}
+                            >
+                                Share
+                            </button>
 
                             {isOwner && (
                                 <button
@@ -204,6 +212,17 @@ function Workspaces() {
                 )}
 
             </div>
+
+            {sharingId && (
+                <ShareWorkspaceModal
+                workspaceId={sharingId}
+                onClose={() => {
+                    setSharingId(null);
+                    // member counts on the tiles may have changed
+                    getWorkspaces();
+                }}
+                />
+            )}
 
         </div>
     );
