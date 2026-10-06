@@ -1,5 +1,6 @@
 const prisma = require("../thePrisma");
 const { canAccessWorkspace, canEditWorkspace, canEditBoard, getWorkspaceRole } = require("./boardAccess");
+const { logActivity } = require("./activity");
 
 
 const getBoards = async (req, res) => {
@@ -36,6 +37,9 @@ const createBoard = async (req, res) => {
             workspaceId,
         },
     });
+
+    await logActivity(req.user.userId, workspaceId, "created", "board", board.title);
+
     res.status(201).json(board);
 };
 
@@ -43,7 +47,10 @@ const updateBoard = async (req, res) => {
     const { title } = req.body;
     const  id  = parseInt(req.params.id);
 
-    if (!(await canEditBoard(req.user.userId, id))) {
+    // the check gives back the board as it was, so the log can say what it was renamed from
+    const before = await canEditBoard(req.user.userId, id);
+
+    if (!before) {
         return res.status(403).json({ message: "You only have view access to this board" });
     }
 
@@ -51,6 +58,10 @@ const updateBoard = async (req, res) => {
         where: { id },
         data: { title },
     });
+
+    if (before.title !== board.title) {
+        await logActivity(req.user.userId, board.workspaceId, "updated", "board", board.title, `renamed from "${before.title}"`);
+    }
 
     res.status(200).json(board);
 };
@@ -79,6 +90,8 @@ const deleteBoard = async (req, res) => {
         prisma.list.deleteMany({ where: { boardId: id } }),
         prisma.board.delete({ where: { id } })
     ]);
+
+    await logActivity(req.user.userId, board.workspaceId, "deleted", "board", board.title);
 
     res.status(200).json(board);
 };

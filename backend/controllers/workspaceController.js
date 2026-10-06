@@ -1,4 +1,5 @@
 const prisma = require("../thePrisma");
+const { logActivity } = require("./activity");
 const { ROLES, workspaceAccess, getWorkspaceRole, canAccessWorkspace, canManageMembers } = require("./boardAccess");
 
 const userFields = { id: true, username: true, email: true, avatar: true };
@@ -49,6 +50,8 @@ const createWorkspace = async (req, res) => {
         data: { name, ownerId: req.user.userId },
     });
 
+    await logActivity(req.user.userId, workspace.id, "created", "workspace", workspace.name);
+
     res.status(201).json(workspace);
 };
 
@@ -88,6 +91,14 @@ const updateWorkspace = async (req, res) => {
         where: { id },
         data,
     });
+
+    if (data.name !== undefined && data.name !== workspace.name) {
+        await logActivity(req.user.userId, id, "updated", "workspace", updated.name, `renamed from "${workspace.name}"`);
+    }
+
+    if (data.image !== undefined && data.image !== workspace.image) {
+        await logActivity(req.user.userId, id, "updated", "workspace", updated.name, data.image ? "changed the workspace picture" : "removed the workspace picture");
+    }
 
     res.status(200).json(updated);
 };
@@ -181,6 +192,8 @@ const addMember = async (req, res) => {
         throw error;
     }
 
+    await logActivity(req.user.userId, id, "added", "member", user.username, `as ${role}`);
+
     res.status(201).json({ id: user.id, username: user.username, email: user.email, role });
 };
 
@@ -208,6 +221,10 @@ const updateMemberRole = async (req, res) => {
         return res.status(404).json({ message: "That person isn't a member of this workspace" });
     }
 
+    const changed = await prisma.user.findUnique({ where: { id: userId } });
+
+    await logActivity(req.user.userId, id, "updated", "member", changed.username, `role changed to ${role}`);
+
     res.status(200).json({ userId, role });
 };
 
@@ -223,14 +240,39 @@ const removeMember = async (req, res) => {
         return res.status(403).json({ message: "Not allowed to remove this member" });
     }
 
-    await prisma.workspaceMember.deleteMany({
+    const removed = await prisma.workspaceMember.deleteMany({
         where: { workspaceId: id, userId }
     });
+
+    if (removed.count > 0) {
+        const person = await prisma.user.findUnique({ where: { id: userId } });
+
+        await logActivity(req.user.userId, id, "removed", "member", person.username, isSelf ? "left the workspace" : null);
+    }
 
     res.status(200).json({ message: "Member removed" });
 };
 
+// the most recent changes in a workspace, newest first (anyone in the workspace can see it)
+const getActivity = async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    if (!(await canAccessWorkspace(req.user.userId, id))) {
+        return res.status(403).json({ message: "No access to this workspace" });
+    }
+
+    const activity = await prisma.activity.findMany({
+        where: { workspaceId: id },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        include: { user: { select: userFields } },
+    });
+
+    res.status(200).json(activity);
+};
+
 module.exports = {
+    getActivity,
     getWorkspaces,
     getWorkspace,
     createWorkspace,

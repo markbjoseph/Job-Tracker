@@ -200,3 +200,74 @@
 .account-profile-row:has(.ws-image-field) {
     align-items: flex-start;
 }
+
+/* Activity list: who did what, and when */
+.ws-activity {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.ws-activity li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    padding: 12px 0;
+    border-bottom: 1px solid #444;
+}
+
+.ws-activity li:last-child {
+    border-bottom: none;
+}
+
+.ws-activity-avatar {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    overflow: hidden;
+
+    background-color: #555;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ws-activity-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ws-activity-text {
+    min-width: 0;
+}
+
+.ws-activity-text p {
+    margin: 0;
+    color: white;
+    font-size: 14px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.ws-activity-details {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ws-activity-time {
+    display: block;
+    margin-top: 2px;
+
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+}

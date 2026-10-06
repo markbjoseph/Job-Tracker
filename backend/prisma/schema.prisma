@@ -25,6 +25,7 @@ model User {
   boards    Board[]
   workspaces  Workspace[]
   workspaceMemberships WorkspaceMember[]
+  activities  Activity[]
   loginEvents LoginEvent[]
 
   createdAt DateTime @default(now())
@@ -78,6 +79,7 @@ model Workspace {
 
   boards    Board[]
   members   WorkspaceMember[]
+  activities Activity[]
 
   createdAt DateTime @default(now())
 }
@@ -113,4 +115,27 @@ model LoginEvent {
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+// one row per change someone makes in a workspace, shown in Activity on the Manage workspace page
+model Activity {
+  id          Int      @id @default(autoincrement())
+
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  // who did it
+  userId      Int
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action      String   // "created", "updated", "deleted", "moved", "added", "removed"
+  targetType  String   // "board", "list", "card", "member", "workspace"
+  targetName  String   // name at the time, so it still reads right after a rename or delete
+
+  // extra detail, e.g. which board a card is on or what something was renamed to
+  details     String?
+
+  createdAt   DateTime @default(now())
+
+  @@index([workspaceId, createdAt])
 }

@@ -11,6 +11,7 @@ const {
     addMember,
     updateMemberRole,
     removeMember,
+    getActivity,
 } = require("../controllers/workspaceController");
 const authToken = require("../middleware/authToken");
 const authMiddleware = require("../middleware/authMiddleware");
@@ -29,6 +30,9 @@ router.put("/workspaces/:id", authToken, authMiddleware, updateWorkspace);
 
 // Delete workspace (and every board in it)
 router.delete("/workspaces/:id", authToken, authMiddleware, deleteWorkspace);
+
+// Recent changes in the workspace (who created / edited / deleted what)
+router.get("/workspaces/:id/activity", authToken, authMiddleware, getActivity);
 
 // Workspace members (sharing a workspace shares all of its boards)
 router.get("/workspaces/:id/members", authToken, authMiddleware, getMembers);

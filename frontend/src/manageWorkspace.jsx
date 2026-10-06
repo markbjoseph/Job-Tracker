@@ -111,6 +111,50 @@ function ManageWorkspace() {
 
     const isOwner = workspace && currentUser && workspace.ownerId === currentUser.id;
 
+    // recent changes in this workspace, newest first
+    const [activity, setActivity] = useState([]);
+
+    const getActivity = async () => {
+
+        const response = await fetch(`http://localhost:3000/workspaces/${workspaceId}/activity`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        setActivity(await response.json());
+    };
+
+    // load it when Activity is opened, and again when switching workspace
+    useEffect(() => {
+        if (workspaceId && section === "activity") {
+            getActivity();
+        }
+    }, [workspaceId, section]);
+
+    // "just now", "5 minutes ago", "3 days ago", or the date for anything older than a week
+    const timeAgo = (dateString) => {
+        const seconds = Math.floor((Date.now() - new Date(dateString)) / 1000);
+
+        if (seconds < 60) return "just now";
+
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+
+        const days = Math.floor(hours / 24);
+        if (days < 7) return `${days} day${days === 1 ? "" : "s"} ago`;
+
+        return new Date(dateString).toLocaleDateString();
+    };
+
     // only preview the picked picture here, it's saved with "Save changes"
     const changeImage = async (e) => {
         const file = e.target.files[0];
@@ -306,8 +350,40 @@ function ManageWorkspace() {
                     <div className="account-section">
                         <h2>Activity</h2>
 
-                        {/* activity isn't recorded yet, so this is a placeholder */}
-                        <p className="account-devices-empty">No recent activity.</p>
+                        {activity.length === 0 ? (
+                            <p className="account-devices-empty">No activity yet.</p>
+                        ) : (
+                            <ul className="ws-activity">
+                                {activity.map((entry) => (
+                                    <li key={entry.id}>
+
+                                        {/* who did it */}
+                                        <div className="ws-activity-avatar">
+                                            {entry.user.avatar ? (
+                                                <img src={entry.user.avatar} alt="" />
+                                            ) : (
+                                                entry.user.username.charAt(0).toUpperCase()
+                                            )}
+                                        </div>
+
+                                        <div className="ws-activity-text">
+                                            {/* e.g. "mark created card "Call recruiter"" */}
+                                            <p>
+                                                <strong>{entry.user.username}</strong>
+                                                {" "}{entry.action} {entry.targetType}{" "}
+                                                <strong>"{entry.targetName}"</strong>
+                                                {entry.details && <span className="ws-activity-details"> {entry.details}</span>}
+                                            </p>
+
+                                            <span className="ws-activity-time" title={new Date(entry.createdAt).toLocaleString()}>
+                                                {timeAgo(entry.createdAt)}
+                                            </span>
+                                        </div>
+
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
                 )}
 
