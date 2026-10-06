@@ -7,7 +7,9 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors());
-app.use(express.json()); //initalises req.body to be a JavaScript object instead of a string
+// initalises req.body to be a JavaScript object instead of a string
+// limit raised from the default 100kb so card pictures fit in a request
+app.use(express.json({ limit: "2mb" }));
 
 // Import routes
 const authRoutes = require("./routes/authRoutes");

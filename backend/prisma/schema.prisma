@@ -64,6 +64,13 @@ model Card {
   description String?
   position    Int
 
+  // picture inside the card, as a data URL (null = no picture)
+  image       String?
+  // where the picture sits in the description, which the text wraps around:
+  // imageX: 0 = on the left (text on its right), 100 = on the right; imageY: how far down, in rem
+  imageX      Float    @default(0)
+  imageY      Float    @default(0)
+
   listId      Int
   list         List @relation(fields: [listId], references: [id])
 }

@@ -144,8 +144,40 @@
 
 .card-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+
+    /* keep the cross and three dots at the top if a long title wraps */
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    /* space between the title and the description below it */
+    margin-bottom: 1.25rem;
+}
+
+/* title takes up the space on the left, pushing the cross and three dots to the right */
+.card-header .card-title {
+    flex: 1;
+    min-width: 0;
+}
+
+/* close cross in the top right of the card pop-up, just left of the three dots */
+.card-close {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+
+    border: none;
+    border-radius: 0.375rem;
+
+    background: transparent;
+    color: #555;
+    font-size: 1.125rem;
+    cursor: pointer;
+}
+
+.card-close:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: #222;
 }
 
 .card-menu {
@@ -156,10 +188,14 @@
     color: #555;
 }
 
+/* card title in the pop-up, big like a heading */
 .card-title {
-    font-size: 1.125rem;
+    margin: 0;
+    font-size: 1.75rem;
     font-weight: bold;
+    line-height: 1.25;
     color:#222;
+    overflow-wrap: anywhere;
 }
 
 .drop-indicator {
@@ -552,4 +588,53 @@
 .add-card:hover {
     background-color: rgba(0, 0, 0, 0.08);
     color: #222;
+}
+
+/* description area in the card pop-up; the text wraps around the picture inside it */
+.card-body {
+    /* grows to fit the picture even when the description is short */
+    display: flow-root;
+}
+
+/* keeps new lines the user typed with Enter */
+.card-description {
+    margin: 0;
+    min-height: 1.5rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* invisible block above the picture, its height is how far down the picture sits */
+.card-image-spacer {
+    width: 0;
+}
+
+.card-image {
+    width: 40%;
+    max-height: 16rem;
+    object-fit: contain;
+
+    border-radius: 0.375rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
+
+    cursor: grab;
+
+    /* stops the page scrolling instead of dragging on touch screens */
+    touch-action: none;
+    user-select: none;
+}
+
+/* gap between the picture and the text wrapping beside it */
+.card-image-left {
+    margin: 0.25rem 1rem 0.5rem 0;
+}
+
+.card-image-right {
+    margin: 0.25rem 0 0.5rem 1rem;
+}
+
+.card-image.dragging {
+    cursor: grabbing;
+    box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.25);
+    opacity: 0.85;
 }

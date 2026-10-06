@@ -1,8 +1,9 @@
-    import React, { useEffect, useState } from "react";
+    import React, { useEffect, useRef, useState } from "react";
     import "./board.css";
     import AccountMenu from "./AccountMenu";
     import ShareWorkspaceModal from "./ShareWorkspaceModal";
     import "./modal.css";
+    import { fitImage } from "./imageUtils";
     import { useNavigate, useParams } from "react-router-dom";
 
     function Board() {
@@ -198,6 +199,15 @@
 
 
 
+    // true when a mouse press started on the card pop-up's dark background
+    const overlayPressRef = useRef(false);
+
+    // closes the card pop-up (and its three dot menu if it was open)
+    const closeCardModal = () => {
+        setShowCardMenu(false);
+        setShowCardModal(false);
+    };
+
     const createCard = async (listId, e) => {
 
         const newCardTitle = e.target.innerText.trim();
@@ -334,6 +344,125 @@
         console.log(data);
 
         replaceCard(data);
+    };
+
+    // ---------- picture inside a card ----------
+
+    // hidden file input, opened from the card's three dot menu
+    const cardImageInputRef = useRef(null);
+
+    // the description area (text + picture) and the picture, used to work out positions while dragging
+    const cardBodyRef = useRef(null);
+    const cardImageRef = useRef(null);
+
+    // { side: "left" | "right", y: rem } while dragging, so the text re-wraps live before it's saved
+    const [dragImagePos, setDragImagePos] = useState(null);
+
+    // where the pointer grabbed the picture, so it doesn't jump to the pointer's corner
+    const imageGrabRef = useRef(null);
+
+    const saveCard = async (changes) => {
+
+        const response = await fetch(`http://localhost:3000/cards/${selectedCard.id}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(changes)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message);
+            return;
+        }
+
+        replaceCard(data);
+    };
+
+    const changeCardImage = async (e) => {
+        const file = e.target.files[0];
+
+        // lets the same file be picked again later
+        e.target.value = "";
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please choose an image file");
+            return;
+        }
+
+        try {
+            // keep its shape, longest side at most 800px so it stays a reasonable size
+            await saveCard({ image: await fitImage(file, 800) });
+        } catch {
+            alert("Couldn't read that image");
+        }
+    };
+
+    // the picture's saved place: which side the text wraps around it from, and how far down (rem)
+    const savedImagePos = () => ({
+        side: selectedCard.imageX >= 50 ? "right" : "left",
+        y: selectedCard.imageY,
+    });
+
+    // where the picture should go for a pointer position: the nearer side, and how far down the description
+    const imagePositionFor = (clientX, clientY) => {
+        const body = cardBodyRef.current.getBoundingClientRect();
+
+        // rem size right now, so the saved distance scales with the page
+        const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+        const top = clientY - body.top - imageGrabRef.current.y;
+
+        return {
+            side: clientX - body.left < body.width / 2 ? "left" : "right",
+            y: Math.max(0, Math.round((top / rootPx) * 100) / 100),
+        };
+    };
+
+    const startImageDrag = (e) => {
+        e.preventDefault();
+
+        const picture = cardImageRef.current.getBoundingClientRect();
+        imageGrabRef.current = { y: e.clientY - picture.top };
+
+        // keep getting pointer moves even if the pointer leaves the picture
+        e.currentTarget.setPointerCapture(e.pointerId);
+
+        setDragImagePos(savedImagePos());
+    };
+
+    const moveImageDrag = (e) => {
+        if (!dragImagePos) {
+            return;
+        }
+
+        setDragImagePos(imagePositionFor(e.clientX, e.clientY));
+    };
+
+    const endImageDrag = async (e) => {
+        if (!dragImagePos) {
+            return;
+        }
+
+        const final = imagePositionFor(e.clientX, e.clientY);
+        setDragImagePos(null);
+
+        const imageX = final.side === "right" ? 100 : 0;
+        const imageY = final.y;
+
+        // only save if it actually moved
+        if (imageX !== selectedCard.imageX || imageY !== selectedCard.imageY) {
+            // show it in the new place straight away while it saves
+            setSelectedCard((card) => ({ ...card, imageX, imageY }));
+            await saveCard({ imageX, imageY });
+        }
     };
 
     const updateCardDescription = async (e) => {
@@ -1202,7 +1331,20 @@
         )}
 
     {showCardModal && (
-        <div className="modal-overlay">
+        // clicking the dark area around the pop-up closes it.
+        // uses click (not mousedown) so an edited title/description saves on blur first,
+        // and only counts if the press started on the dark area too (not a text drag from inside)
+        <div
+        className="modal-overlay"
+        onMouseDown={(e) => {
+            overlayPressRef.current = e.target === e.currentTarget;
+        }}
+        onClick={(e) => {
+            if (overlayPressRef.current && e.target === e.currentTarget) {
+                closeCardModal();
+            }
+        }}
+        >
 
             <div className="modal">
 
@@ -1225,6 +1367,16 @@
                         {selectedCard.title}
                     </h2>
 
+                    {/* close, top right just before the three dots */}
+                    <button
+                    type="button"
+                    className="card-close"
+                    aria-label="Close card"
+                    onClick={closeCardModal}
+                    >
+                        ✕
+                    </button>
+
                     <div className="menu-container">
 
                         <button className="card-menu"
@@ -1235,6 +1387,22 @@
                         
                         {showCardMenu && (
                             <div className="list-menu-dropdown">
+                                <button onClick={() => {
+                                    setShowCardMenu(false);
+                                    cardImageInputRef.current.click();
+                                }}>
+                                    {selectedCard.image ? "Change image" : "Add image"}
+                                </button>
+
+                                {selectedCard.image && (
+                                    <button onClick={() => {
+                                        setShowCardMenu(false);
+                                        saveCard({ image: null });
+                                    }}>
+                                        Remove image
+                                    </button>
+                                )}
+
                                 <button onClick={deleteCard}>Delete Card</button>
                             </div>
                         )}
@@ -1242,25 +1410,66 @@
                     </div>
                 </div>
 
-                {/* edit the description in place, saves when clicking away */}
-                <p
-                key={`description-${selectedCard.description}`}
-                className="editable"
-                contentEditable
-                suppressContentEditableWarning
-                data-placeholder="Add a description..."
-                onBlur={updateCardDescription}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                        e.preventDefault();
-                        e.target.blur();
-                    }
-                }}
-                >
-                    {selectedCard.description}
-                </p>
+                {/* hidden file picker for the card picture */}
+                <input
+                ref={cardImageInputRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={changeCardImage}
+                />
 
-                <button onClick={() => setShowCardModal(false)}>Close</button>
+                {/* description with the picture inside it; the text wraps around the picture */}
+                <div className="card-body" ref={cardBodyRef}>
+
+                    {selectedCard.image && (() => {
+                        const pos = dragImagePos || savedImagePos();
+
+                        return (
+                            <>
+                                {/* invisible spacer that pushes the picture down to its spot */}
+                                <div
+                                className="card-image-spacer"
+                                style={{ float: pos.side, height: `${pos.y}rem` }}
+                                />
+
+                                {/* drag it: left/right picks the side, up/down moves it through the text */}
+                                <img
+                                ref={cardImageRef}
+                                className={`card-image card-image-${pos.side} ${dragImagePos ? "dragging" : ""}`}
+                                style={{ float: pos.side, clear: pos.side }}
+                                src={selectedCard.image}
+                                alt=""
+                                draggable={false}
+                                onPointerDown={startImageDrag}
+                                onPointerMove={moveImageDrag}
+                                onPointerUp={endImageDrag}
+                                onPointerCancel={endImageDrag}
+                                />
+                            </>
+                        );
+                    })()}
+
+                    {/* edit the description in place: Enter makes a new line, saves when clicking away */}
+                    <p
+                    key={`description-${selectedCard.description}`}
+                    className="editable card-description"
+                    contentEditable
+                    suppressContentEditableWarning
+                    data-placeholder="Add a description..."
+                    onBlur={updateCardDescription}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            // a plain line break, instead of the browser wrapping the new line in its own block
+                            e.preventDefault();
+                            document.execCommand("insertLineBreak");
+                        }
+                    }}
+                    >
+                        {selectedCard.description}
+                    </p>
+
+                </div>
 
             </div>
 

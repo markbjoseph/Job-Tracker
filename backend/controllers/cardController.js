@@ -59,7 +59,7 @@ const createCards = async (req, res) => {
 
 const updateCards = async (req, res) => {
 
-    const { title, description } = req.body;
+    const { title, description, image, imageX, imageY } = req.body;
     const id = parseInt(req.params.id);
 
     const board = await canEditCard(req.user.userId, id);
@@ -82,6 +82,34 @@ const updateCards = async (req, res) => {
         data.description = description;
     }
 
+    // picture inside the card: an image data URL, or null to remove it
+    if (image !== undefined) {
+        if (image !== null && !/^data:image\/(png|jpeg|webp);base64,/.test(image)) {
+            return res.status(400).json({ message: "Card picture must be an image" });
+        }
+        if (image && image.length > 1500000) {
+            return res.status(400).json({ message: "Card picture is too large" });
+        }
+        data.image = image;
+
+        // a new or removed picture starts back in the top left
+        data.imageX = 0;
+        data.imageY = 0;
+    }
+
+    // where the picture has been dragged to:
+    //   imageX - which side the text wraps around it from, 0 = left side, 100 = right side
+    //   imageY - how far down the description it sits, in rem
+    const clamp = (value, max) => Math.min(max, Math.max(0, Number(value) || 0));
+
+    if (imageX !== undefined) {
+        data.imageX = clamp(imageX, 100);
+    }
+
+    if (imageY !== undefined) {
+        data.imageY = clamp(imageY, 500);
+    }
+
     const cards = await prisma.card.update({
         where: {id},
         data: data
@@ -89,6 +117,10 @@ const updateCards = async (req, res) => {
 
     if (title !== undefined && before.title !== cards.title) {
         await logActivity(req.user.userId, board.workspaceId, "updated", "card", cards.title, `renamed from "${before.title}" on board "${board.title}"`);
+    }
+
+    if (image !== undefined && image !== before.image) {
+        await logActivity(req.user.userId, board.workspaceId, "updated", "card", cards.title, `${image ? "added a picture" : "removed the picture"} on board "${board.title}"`);
     }
 
     if (description !== undefined && (before.description || "") !== (cards.description || "")) {
