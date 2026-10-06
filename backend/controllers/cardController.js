@@ -1,5 +1,5 @@
 const prisma = require("../thePrisma");
-const { canAccessList, canAccessCard } = require("./boardAccess");
+const { canAccessList, canEditList, canEditCard } = require("./boardAccess");
 
 const getCards = async (req, res) => {
 
@@ -22,8 +22,8 @@ const createCards = async (req, res) => {
     const { title, description, listId } = req.body;
     const id = parseInt(listId)
 
-    if (!(await canAccessList(req.user.userId, id))) {
-        return res.status(403).json({ message: "No access to this board" });
+    if (!(await canEditList(req.user.userId, id))) {
+        return res.status(403).json({ message: "You only have view access to this board" });
     }
 
 
@@ -56,8 +56,8 @@ const updateCards = async (req, res) => {
     const { title, description } = req.body;
     const id = parseInt(req.params.id);
 
-    if (!(await canAccessCard(req.user.userId, id))) {
-        return res.status(403).json({ message: "No access to this board" });
+    if (!(await canEditCard(req.user.userId, id))) {
+        return res.status(403).json({ message: "You only have view access to this board" });
     }
 
 
@@ -84,8 +84,8 @@ const deleteCards = async (req, res) => {
 
     const id = parseInt(req.params.id);
 
-    if (!(await canAccessCard(req.user.userId, id))) {
-        return res.status(403).json({ message: "No access to this board" });
+    if (!(await canEditCard(req.user.userId, id))) {
+        return res.status(403).json({ message: "You only have view access to this board" });
     }
 
 
@@ -103,12 +103,12 @@ const updateCardPositions = async (req, res) => {
     const lists = req.body
 
     for (const list of lists) {
-        if (!(await canAccessList(req.user.userId, list.id))) {
-            return res.status(403).json({ message: "No access to this board" });
+        if (!(await canEditList(req.user.userId, list.id))) {
+            return res.status(403).json({ message: "You only have view access to this board" });
         }
         for (const card of list.cards) {
-            if (!(await canAccessCard(req.user.userId, card.id))) {
-                return res.status(403).json({ message: "No access to this board" });
+            if (!(await canEditCard(req.user.userId, card.id))) {
+                return res.status(403).json({ message: "You only have view access to this board" });
             }
         }
     }

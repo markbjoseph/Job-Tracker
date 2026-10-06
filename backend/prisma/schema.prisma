@@ -71,6 +71,7 @@ model Card {
 model Workspace {
   id        Int      @id @default(autoincrement())
   name      String
+  image     String?  // workspace picture as a small data URL, null = no picture
 
   ownerId   Int
   owner     User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
@@ -90,6 +91,9 @@ model WorkspaceMember {
 
   userId      Int
   user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // what they're allowed to do: "admin" (also manage people), "member" (edit), "viewer" (read only)
+  role        String   @default("member")
 
   createdAt   DateTime @default(now())
 

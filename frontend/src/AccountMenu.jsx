@@ -91,14 +91,14 @@ function AccountMenu() {
                         </div>
                     )}
 
-                    <button onClick={switchAccounts}>Switch accounts</button>
+                    <button onClick={switchAccounts}>Switch Accounts</button>
                     <button onClick={() => navigate("/account")}>Manage Account</button>
 
-                    <button onClick={() => navigate("/workspaces")}>Manage workspace</button>
+                    <button onClick={() => navigate("/manage-workspace")}>Manage Workspace</button>
 
                     <div className="account-divider"></div>
 
-                    <button onClick={switchAccounts}>Log out</button>
+                    <button onClick={switchAccounts}>Log Out</button>
                 </div>
             )}
 

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./workspace.css";
 import AccountMenu from "./AccountMenu";
-import ShareWorkspaceModal from "./ShareWorkspaceModal";
 
 // first page after logging in: every workspace the user owns or has been invited to
 function Workspaces() {
@@ -17,9 +16,6 @@ function Workspaces() {
     const [newName, setNewName] = useState("");
 
     const [error, setError] = useState("");
-
-    // id of the workspace whose Share pop-up is open, null when closed
-    const [sharingId, setSharingId] = useState(null);
 
     const getWorkspaces = async () => {
 
@@ -85,29 +81,6 @@ function Workspaces() {
         navigate(`/workspaces/${data.id}`);
     };
 
-    const deleteWorkspace = async (workspace) => {
-
-        if (!window.confirm(`Delete "${workspace.name}" and every board in it?`)) {
-            return;
-        }
-
-        const response = await fetch(`http://localhost:3000/workspaces/${workspace.id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            setError(data.message);
-            return;
-        }
-
-        setWorkspaces((current) => current.filter((w) => w.id !== workspace.id));
-    };
-
     return (
         <div className="workspaces-page">
 
@@ -128,7 +101,9 @@ function Workspaces() {
                     return (
                         <div
                         key={workspace.id}
-                        className="workspace-tile"
+                        className={`workspace-tile ${workspace.image ? "has-image" : ""}`}
+                        // the workspace picture fills the whole tile
+                        style={workspace.image ? { backgroundImage: `url(${workspace.image})` } : undefined}
                         role="button"
                         tabIndex={0}
                         onClick={() => navigate(`/workspaces/${workspace.id}`)}
@@ -149,32 +124,6 @@ function Workspaces() {
                                 </span>
                             )}
 
-                            <button
-                            type="button"
-                            className="workspace-tile-share"
-                            onClick={(e) => {
-                                // don't also open the workspace
-                                e.stopPropagation();
-                                setSharingId(workspace.id);
-                            }}
-                            >
-                                Share
-                            </button>
-
-                            {isOwner && (
-                                <button
-                                type="button"
-                                className="workspace-tile-delete"
-                                aria-label={`Delete ${workspace.name}`}
-                                onClick={(e) => {
-                                    // don't also open the workspace
-                                    e.stopPropagation();
-                                    deleteWorkspace(workspace);
-                                }}
-                                >
-                                    Delete
-                                </button>
-                            )}
                         </div>
                     );
                 })}
@@ -212,17 +161,6 @@ function Workspaces() {
                 )}
 
             </div>
-
-            {sharingId && (
-                <ShareWorkspaceModal
-                workspaceId={sharingId}
-                onClose={() => {
-                    setSharingId(null);
-                    // member counts on the tiles may have changed
-                    getWorkspaces();
-                }}
-                />
-            )}
 
         </div>
     );

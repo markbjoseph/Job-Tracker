@@ -1,5 +1,5 @@
 const prisma = require("../thePrisma");
-const { canAccessBoard, canAccessList } = require("./boardAccess");
+const { canAccessBoard, canEditBoard, canEditList } = require("./boardAccess");
 
 const getLists = async (req, res) => {
 
@@ -25,8 +25,8 @@ const createList = async (req, res) => {
     const { title, boardId } = req.body;
     const id = parseInt(boardId)
 
-    if (!(await canAccessBoard(req.user.userId, id))) {
-        return res.status(403).json({ message: "No access to this board" });
+    if (!(await canEditBoard(req.user.userId, id))) {
+        return res.status(403).json({ message: "You only have view access to this board" });
     }
 
 
@@ -56,8 +56,8 @@ const updateList = async (req, res) => {
     const id = parseInt(req.params.id)
     const { title } = req.body;
 
-    if (!(await canAccessList(req.user.userId, id))) {
-        return res.status(403).json({ message: "No access to this board" });
+    if (!(await canEditList(req.user.userId, id))) {
+        return res.status(403).json({ message: "You only have view access to this board" });
     }
 
 
@@ -75,8 +75,8 @@ const updatePositions = async (req, res) => {
     const lists = req.body;
 
     for (const list of lists) {
-        if (!(await canAccessList(req.user.userId, list.id))) {
-            return res.status(403).json({ message: "No access to this board" });
+        if (!(await canEditList(req.user.userId, list.id))) {
+            return res.status(403).json({ message: "You only have view access to this board" });
         }
     }
 
@@ -96,8 +96,8 @@ const deleteList = async (req, res) => {
 
     const id = parseInt(req.params.id)
 
-    if (!(await canAccessList(req.user.userId, id))) {
-        return res.status(403).json({ message: "No access to this board" });
+    if (!(await canEditList(req.user.userId, id))) {
+        return res.status(403).json({ message: "You only have view access to this board" });
     }
 
 

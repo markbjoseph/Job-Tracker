@@ -9,6 +9,7 @@ const {
     deleteWorkspace,
     getMembers,
     addMember,
+    updateMemberRole,
     removeMember,
 } = require("../controllers/workspaceController");
 const authToken = require("../middleware/authToken");
@@ -33,6 +34,9 @@ router.delete("/workspaces/:id", authToken, authMiddleware, deleteWorkspace);
 router.get("/workspaces/:id/members", authToken, authMiddleware, getMembers);
 
 router.post("/workspaces/:id/members", authToken, authMiddleware, addMember);
+
+// Change a member's role (admin / member / viewer)
+router.put("/workspaces/:id/members/:userId", authToken, authMiddleware, updateMemberRole);
 
 router.delete("/workspaces/:id/members/:userId", authToken, authMiddleware, removeMember);
 

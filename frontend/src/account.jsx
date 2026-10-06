@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./account.css";
+import { resizeImage } from "./imageUtils";
 
 function Account() {
 
@@ -141,39 +142,6 @@ function Account() {
 
         setEmail(data.email);
         setEmailMessage({ type: "success", text: "Email updated" });
-    };
-
-    // shrink the picked image to a 128x128 square so it stays small
-    const resizeImage = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onload = () => {
-                const img = new Image();
-
-                img.onload = () => {
-                    const size = 128;
-                    const canvas = document.createElement("canvas");
-                    canvas.width = size;
-                    canvas.height = size;
-
-                    // crop the middle square of the image
-                    const side = Math.min(img.width, img.height);
-                    const sx = (img.width - side) / 2;
-                    const sy = (img.height - side) / 2;
-
-                    canvas.getContext("2d").drawImage(img, sx, sy, side, side, 0, 0, size, size);
-
-                    resolve(canvas.toDataURL("image/jpeg", 0.85));
-                };
-
-                img.onerror = reject;
-                img.src = reader.result;
-            };
-
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
     };
 
     const changeAvatar = async (e) => {

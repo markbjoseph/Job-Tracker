@@ -1,0 +1,202 @@
+/* sidebar on the Manage workspace page, same look as the boards page sidebar */
+.ws-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 5;
+
+    width: 220px;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+
+    background-color: #333;
+
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+/* fully closed: no dark background, only the open/close icon is left */
+.ws-sidebar.closed {
+    width: 65px;
+    background-color: transparent;
+}
+
+.ws-sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    min-height: 32px;
+    margin-bottom: 16px;
+}
+
+.ws-sidebar-toggle {
+    display: block;
+    flex-shrink: 0;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+
+    /* sidebar grey over the page, white on the dark open sidebar */
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.ws-sidebar.open .ws-sidebar-toggle {
+    color: white;
+}
+
+.ws-sidebar-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+    color: white;
+    cursor: pointer;
+}
+
+.ws-sidebar-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ws-sidebar-content {
+    padding-top: 16px;
+}
+
+/* workspace dropdown at the top of the sidebar */
+.ws-sidebar-picker {
+    width: 100%;
+    margin-bottom: 24px;
+    padding: 8px;
+
+    border: 1px solid #555;
+    border-radius: 6px;
+
+    background-color: #444;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.ws-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Members / Activity / Settings, same as the board buttons in the boards sidebar */
+.ws-sidebar-button {
+    width: 100%;
+    padding: 12px;
+
+    border: none;
+    border-radius: 16px;
+
+    background-color: transparent;
+    color: white;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.ws-sidebar-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ws-sidebar-button.selected {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* the selected section, beside the sidebar */
+.ws-main {
+    max-width: 640px;
+    padding: 70px 40px 40px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    transition: margin-left 0.3s ease;
+}
+
+.ws-main.sidebar-open {
+    margin-left: 220px;
+}
+
+.ws-main.sidebar-closed {
+    margin-left: 65px;
+}
+
+/* Members section: same box as the Share pop-up (.modal + .share-modal), just not floating */
+.ws-members-panel {
+    padding: 30px;
+    border-radius: 10px;
+
+    background: #333;
+    color: white;
+}
+
+.account-section .ws-danger {
+    background-color: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+}
+
+.account-section .ws-danger:hover {
+    background-color: rgba(255, 107, 107, 0.35);
+}
+
+/* on small screens the sidebar covers the page instead of pushing it */
+@media (max-width: 600px) {
+    .ws-main.sidebar-open,
+    .ws-main.sidebar-closed {
+        margin-left: 0;
+        padding: 70px 16px 24px;
+    }
+}
+
+/* workspace picture preview: wide rectangle instead of the profile picture's circle */
+.account-section .ws-image-picker {
+    /* same wide shape the picture is saved in, so the preview matches the tile */
+    width: 142px;
+    height: 80px;
+    border-radius: 10px;
+}
+
+.account-section .ws-image-picker:disabled {
+    cursor: default;
+}
+
+.ws-image-letter {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+/* "Workspace image" label above the picture, same style as the "Workspace name" label */
+.ws-image-field {
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.ws-field-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ws-image-field .account-avatar-large,
+.ws-image-field .account-avatar-remove {
+    align-self: flex-start;
+}
+
+/* line up the "Workspace image" and "Workspace name" labels along the top */
+.account-profile-row:has(.ws-image-field) {
+    align-items: flex-start;
+}
