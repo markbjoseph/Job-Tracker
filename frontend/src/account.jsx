@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./account.css";
 import { resizeImage } from "./imageUtils";
+import AccountMenu from "./AccountMenu";
 
 function Account() {
 
@@ -196,11 +197,10 @@ function Account() {
     return (
         <div className="account-page">
 
-            <div className="account-page-container">
+            {/* account icon, top right */}
+            <AccountMenu />
 
-                <button className="account-back" onClick={() => navigate("/workspaces")}>
-                    ← Back to workspaces
-                </button>
+            <div className="account-page-container">
 
                 <h1>Account</h1>
 

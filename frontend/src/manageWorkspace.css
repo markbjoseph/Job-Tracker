@@ -117,7 +117,8 @@
 
 /* the selected section, beside the sidebar */
 .ws-main {
-    max-width: 40rem;
+    /* use most of the space next to the sidebar, but not so wide lines get hard to read */
+    max-width: 75rem;
     padding: 4.375rem 2.5rem 2.5rem;
     box-sizing: border-box;
 

@@ -2,35 +2,28 @@
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    padding: 2.5rem 1rem;
+
+    /* extra space at the top so the heading clears the account icon */
+    padding: 4.5rem 1rem 2.5rem;
     box-sizing: border-box;
 }
 
+/* wide page: the cards sit side by side when there's room, and stack on narrow windows */
 .account-page-container {
     width: 100%;
-    max-width: 32.5rem;
-    display: flex;
-    flex-direction: column;
+    max-width: 75rem;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+    align-items: start;
     gap: 1.5rem;
 }
 
+/* the "Account" heading goes across the full width above the cards */
 .account-page-container h1 {
+    grid-column: 1 / -1;
     margin: 0;
     font-size: 2rem;
-}
-
-.account-back {
-    align-self: flex-start;
-    padding: 0.375rem 0;
-
-    border: none;
-    background: none;
-    font-size: 0.9375rem;
-    cursor: pointer;
-}
-
-.account-back:hover {
-    text-decoration: underline;
 }
 
 /* each form is a dark card, same colour as the sidebar */
