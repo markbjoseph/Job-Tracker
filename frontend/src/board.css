@@ -363,14 +363,18 @@
     border: none;
     border-radius: 0.5rem;
 
-    background-color: rgba(0, 0, 0, 0.06);
+    /* same colours as "Add a Board +" in the sidebar: faded white text on the sidebar's dark grey */
+    background-color: #333;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: inherit;
     text-align: left;
     font-size: 0.9375rem;
     cursor: pointer;
 }
 
 .add-list-button:hover {
-    background-color: rgba(0, 0, 0, 0.12);
+    background-color: #3d3d3d;
+    color: white;
 }
 
 .add-list form {

@@ -1165,7 +1165,7 @@
                             className="add-list-button"
                             onClick={() => setShowTextList(true)}
                             >
-                                + Add another list
+                                Add a List +
                             </button>
                         ) : (
                             <form onSubmit={createList}>
