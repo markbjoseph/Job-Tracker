@@ -1,21 +1,21 @@
 .lists-container {
     display: flex;
-    gap: 15px;
+    gap: 0.9375rem;
     align-items: flex-start;
     overflow-x: auto;
-    padding: 10px;
+    padding: 0.625rem;
 
     /* more space between the lists and the board title / sidebar icon */
-    padding-top: 30px;
+    padding-top: 1.875rem;
 }
 
 .list {
-    width: 250px;
-    min-height: 300px;
-    padding: 15px;
+    width: 15.625rem;
+    min-height: 18.75rem;
+    padding: 0.9375rem;
 
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 0.5rem;
 
     background-color: #f4f4f4;
     flex-shrink: 0;
@@ -24,14 +24,14 @@
 .cards-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.625rem;
 }
 
 .card {
     width: 100%;
-    padding: 15px;
+    padding: 0.9375rem;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     cursor: pointer;
     text-align: left;
 }
@@ -41,11 +41,11 @@
     left: 0; 
     top: 0; 
 
-    width: 220px; 
+    width: 13.75rem; 
     height: 100vh; 
 
     background-color: #333; 
-    padding: 20px;
+    padding: 1.25rem;
 
     box-sizing: border-box;
 
@@ -54,30 +54,30 @@
 
 /* fully closed: no dark background, only the open/close icon is left */
 .sidebar.sidebar-closed {
-    width: 65px;
+    width: 4.0625rem;
     background-color: transparent;
 }
 
 .sidebar.sidebar-open {
-    width: 220px;
+    width: 13.75rem;
 }
 
 .sidebar h2 {
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
 }
 
 .sidebar-button {
     width: 100%;
-    padding: 12px;
+    padding: 0.75rem;
 
     border: none;
-    border-radius: 16px;
+    border-radius: 1rem;
 
     background-color: transparent;
     cursor: pointer;
 
-    font-size: 16px;
+    font-size: 1rem;
     text-align: left;
 }
 
@@ -90,7 +90,7 @@
 }
 
 .main-content {
-    padding: 20px;
+    padding: 1.25rem;
 
     display: flex;
     flex-direction: column;
@@ -99,7 +99,7 @@
 }
 
 .main-content.sidebar-open {
-    margin-left: 220px;
+    margin-left: 13.75rem;
 }
 
 /* closed: lists and board title use the full width */
@@ -116,7 +116,7 @@
 .list-menu {
     border: none;
     background: none;
-    font-size: 20px;
+    font-size: 1.25rem;
     cursor: pointer;
     color: #555;
 }
@@ -129,13 +129,13 @@
 
     background: white;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 0.375rem;
 
-    padding: 8px;
+    padding: 0.5rem;
 
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0.3125rem;
 }
 
 .menu-container {
@@ -151,34 +151,34 @@
 .card-menu {
     border: none;
     background: none;
-    font-size: 20px;
+    font-size: 1.25rem;
     cursor: pointer;
     color: #555;
 }
 
 .card-title {
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: bold;
     color:#222;
 }
 
 .drop-indicator {
-    height: 50px;
+    height: 3.125rem;
     width: 100%;
     background-color: #f0f0f0;
     border: 2px dashed #999;
-    border-radius: 8px;
-    margin: 5px 0;
+    border-radius: 0.5rem;
+    margin: 0.3125rem 0;
     box-sizing: border-box;
 }
 
 .list-drop-indicator {
-    width: 300px;
-    min-width: 300px;
-    height: 400px;
+    width: 18.75rem;
+    min-width: 18.75rem;
+    height: 25rem;
 
     border: 2px dashed #aaa;
-    border-radius: 10px;
+    border-radius: 0.625rem;
 
     background-color: transparent;
 
@@ -191,14 +191,14 @@
     display: flex;
     align-items: center;
 
-    min-height: 32px;
-    margin-bottom: 16px;
+    min-height: 2rem;
+    margin-bottom: 1rem;
 }
 
 .sidebar-toggle {
     display: block;
-    width: 25px;
-    height: 25px;
+    width: 1.5625rem;
+    height: 1.5625rem;
     cursor: pointer;
 
     /* the lines use this colour: sidebar grey over the page, white on the dark open sidebar */
@@ -212,10 +212,10 @@
 
 /* "Boards" sub heading on its own line, left aligned */
 .sidebar .sidebar-subheading {
-    margin: 0 0 8px;
-    padding-left: 12px;
+    margin: 0 0 0.5rem;
+    padding-left: 0.75rem;
 
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -228,13 +228,13 @@
 .board-header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0.75rem;
 
-    /* clears the icons along the top (account icon ends at 56px) */
-    margin-top: 50px;
+    /* clears the icons along the top (account icon ends at 3.5rem) */
+    margin-top: 3.125rem;
 
     /* same as .lists-container's padding so the title lines up with the first list */
-    padding-left: 10px;
+    padding-left: 0.625rem;
 }
 
 .board-header h2 {
@@ -245,7 +245,7 @@
 .editable {
     outline: none;
     cursor: text;
-    border-radius: 4px;
+    border-radius: 0.25rem;
 }
 
 .editable:hover {
@@ -264,25 +264,25 @@
     align-items: center;
 
     /* space between each board in the sidebar */
-    margin-bottom: 6px;
+    margin-bottom: 0.375rem;
 }
 
 .board-menu-container {
     position: absolute;
-    right: 6px;
+    right: 0.375rem;
     outline: none;
 }
 
 .board-menu-button {
-    width: 28px;
-    height: 28px;
+    width: 1.75rem;
+    height: 1.75rem;
 
     border: none;
-    border-radius: 6px;
+    border-radius: 0.375rem;
 
     background: transparent;
     color: white;
-    font-size: 18px;
+    font-size: 1.125rem;
     cursor: pointer;
 
     /* hidden until the row is hovered or its menu is open */
@@ -302,10 +302,10 @@
 .board-menu {
     position: absolute;
     top: 0;
-    left: calc(100% + 8px);
+    left: calc(100% + 0.5rem);
     z-index: 20;
 
-    min-width: 160px;
+    min-width: 10rem;
 
     display: flex;
     flex-direction: column;
@@ -313,22 +313,22 @@
     /* same dark background as the sidebar */
     background: #333;
     border: 1px solid #444;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.3);
 
-    padding: 6px;
+    padding: 0.375rem;
 }
 
 .board-menu button {
-    padding: 10px 12px;
+    padding: 0.625rem 0.75rem;
 
     border: none;
-    border-radius: 6px;
+    border-radius: 0.375rem;
 
     background: transparent;
     color: white;
     text-align: left;
-    font-size: 15px;
+    font-size: 0.9375rem;
     cursor: pointer;
 }
 
@@ -342,7 +342,7 @@
 
 /* "Add a Board +" button at the bottom of the sidebar list */
 .sidebar-button.add-board {
-    margin-top: 10px;
+    margin-top: 0.625rem;
     color: rgba(255, 255, 255, 0.7);
 }
 
@@ -352,20 +352,20 @@
 
 /* "+ Add another list" column after the last list */
 .add-list {
-    width: 250px;
+    width: 15.625rem;
     flex-shrink: 0;
 }
 
 .add-list-button {
     width: 100%;
-    padding: 12px 15px;
+    padding: 0.75rem 0.9375rem;
 
     border: none;
-    border-radius: 8px;
+    border-radius: 0.5rem;
 
     background-color: rgba(0, 0, 0, 0.06);
     text-align: left;
-    font-size: 15px;
+    font-size: 0.9375rem;
     cursor: pointer;
 }
 
@@ -374,28 +374,28 @@
 }
 
 .add-list form {
-    padding: 10px;
+    padding: 0.625rem;
 
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     background-color: #f4f4f4;
 }
 
 .add-list input {
     width: 100%;
-    padding: 8px;
+    padding: 0.5rem;
     box-sizing: border-box;
 }
 
 .add-list-actions {
     display: flex;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
 }
 
 /* space between the open/close icon and the boards section */
 .sidebar-content {
-    padding-top: 16px;
+    padding-top: 1rem;
 }
 
 /* temporary card shown while adding a new card */
@@ -403,14 +403,14 @@
 .card.new-card {
     box-sizing: border-box;
 
-    /* same border as the other cards (.editable would otherwise make the corners 4px) */
+    /* same border as the other cards (.editable would otherwise make the corners 0.25rem) */
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 0.5rem;
 
     background-color: ButtonFace;
     color: ButtonText;
     font-family: Arial, sans-serif;
-    font-size: 13.333px;
+    font-size: 0.8333rem;
 
     /* buttons use a normal line height, divs inherit the page's taller 145% one */
     line-height: normal;
@@ -429,8 +429,8 @@
 .sidebar-button.new-board {
     box-sizing: border-box;
 
-    /* same shape as the other boards (.editable would otherwise make the corners 4px) */
-    border-radius: 16px;
+    /* same shape as the other boards (.editable would otherwise make the corners 0.25rem) */
+    border-radius: 1rem;
 
     background-color: rgba(255, 255, 255, 0.1);
     color: ButtonText;
@@ -446,15 +446,15 @@
 /* workspace name, back link and share button at the top of the sidebar */
 /* workspace title at the top of the sidebar, with a gap before "Boards" */
 .sidebar-workspace {
-    margin-bottom: 32px;
-    padding-left: 12px;
+    margin-bottom: 2rem;
+    padding-left: 0.75rem;
 }
 
 .sidebar-workspace-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 .sidebar-workspace-name {
@@ -464,7 +464,7 @@
     overflow-wrap: anywhere;
 
     color: white;
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 600;
     line-height: 1.2;
 }
@@ -474,19 +474,19 @@
     position: fixed;
     z-index: 10;
 
-    /* account icon is 40px tall at top: 16px, so this centres on it */
-    top: 24px;
-    right: 72px;
+    /* account icon is 2.5rem tall at top: 1rem, so this centres on it */
+    top: 1.5rem;
+    right: 4.5rem;
 
-    padding: 4px 10px;
+    padding: 0.25rem 0.625rem;
 
     border: none;
-    border-radius: 6px;
+    border-radius: 0.375rem;
 
     /* dark like the account icon so it shows on the white page */
     background-color: #333;
     color: white;
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.2;
     cursor: pointer;
 }
@@ -497,12 +497,12 @@
 
 /* workspaces icon next to the open/close icon */
 .header {
-    gap: 14px;
+    gap: 0.875rem;
 }
 
 .sidebar-icon-button {
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
     padding: 0;
 
     display: flex;
@@ -510,7 +510,7 @@
     justify-content: center;
 
     border: none;
-    border-radius: 6px;
+    border-radius: 0.375rem;
 
     background: transparent;
     color: white;
@@ -519,4 +519,10 @@
 
 .sidebar-icon-button:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* workspaces icon next to the three lines scales with the page */
+.sidebar-icon-button svg {
+    width: 1.25rem;
+    height: 1.25rem;
 }

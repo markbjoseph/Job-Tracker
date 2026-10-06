@@ -5,9 +5,9 @@
     top: 0;
     z-index: 5;
 
-    width: 220px;
+    width: 13.75rem;
     height: 100vh;
-    padding: 20px;
+    padding: 1.25rem;
     box-sizing: border-box;
 
     background-color: #333;
@@ -17,24 +17,24 @@
 
 /* fully closed: no dark background, only the open/close icon is left */
 .ws-sidebar.closed {
-    width: 65px;
+    width: 4.0625rem;
     background-color: transparent;
 }
 
 .ws-sidebar-header {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 0.875rem;
 
-    min-height: 32px;
-    margin-bottom: 16px;
+    min-height: 2rem;
+    margin-bottom: 1rem;
 }
 
 .ws-sidebar-toggle {
     display: block;
     flex-shrink: 0;
-    width: 25px;
-    height: 25px;
+    width: 1.5625rem;
+    height: 1.5625rem;
     cursor: pointer;
 
     /* sidebar grey over the page, white on the dark open sidebar */
@@ -47,8 +47,8 @@
 }
 
 .ws-sidebar-icon {
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
     padding: 0;
 
     display: flex;
@@ -56,7 +56,7 @@
     justify-content: center;
 
     border: none;
-    border-radius: 6px;
+    border-radius: 0.375rem;
 
     background: transparent;
     color: white;
@@ -68,41 +68,41 @@
 }
 
 .ws-sidebar-content {
-    padding-top: 16px;
+    padding-top: 1rem;
 }
 
 /* workspace dropdown at the top of the sidebar */
 .ws-sidebar-picker {
     width: 100%;
-    margin-bottom: 24px;
-    padding: 8px;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem;
 
     border: 1px solid #555;
-    border-radius: 6px;
+    border-radius: 0.375rem;
 
     background-color: #444;
     color: white;
-    font-size: 14px;
+    font-size: 0.875rem;
     cursor: pointer;
 }
 
 .ws-sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0.375rem;
 }
 
 /* Members / Activity / Settings, same as the board buttons in the boards sidebar */
 .ws-sidebar-button {
     width: 100%;
-    padding: 12px;
+    padding: 0.75rem;
 
     border: none;
-    border-radius: 16px;
+    border-radius: 1rem;
 
     background-color: transparent;
     color: white;
-    font-size: 16px;
+    font-size: 1rem;
     text-align: left;
     cursor: pointer;
 }
@@ -117,29 +117,29 @@
 
 /* the selected section, beside the sidebar */
 .ws-main {
-    max-width: 640px;
-    padding: 70px 40px 40px;
+    max-width: 40rem;
+    padding: 4.375rem 2.5rem 2.5rem;
     box-sizing: border-box;
 
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 1.5rem;
 
     transition: margin-left 0.3s ease;
 }
 
 .ws-main.sidebar-open {
-    margin-left: 220px;
+    margin-left: 13.75rem;
 }
 
 .ws-main.sidebar-closed {
-    margin-left: 65px;
+    margin-left: 4.0625rem;
 }
 
 /* Members section: same box as the Share pop-up (.modal + .share-modal), just not floating */
 .ws-members-panel {
-    padding: 30px;
-    border-radius: 10px;
+    padding: 1.875rem;
+    border-radius: 0.625rem;
 
     background: #333;
     color: white;
@@ -159,16 +159,16 @@
     .ws-main.sidebar-open,
     .ws-main.sidebar-closed {
         margin-left: 0;
-        padding: 70px 16px 24px;
+        padding: 4.375rem 1rem 1.5rem;
     }
 }
 
 /* workspace picture preview: wide rectangle instead of the profile picture's circle */
 .account-section .ws-image-picker {
     /* same wide shape the picture is saved in, so the preview matches the tile */
-    width: 142px;
-    height: 80px;
-    border-radius: 10px;
+    width: 8.875rem;
+    height: 5rem;
+    border-radius: 0.625rem;
 }
 
 .account-section .ws-image-picker:disabled {
@@ -176,18 +176,18 @@
 }
 
 .ws-image-letter {
-    font-size: 32px;
+    font-size: 2rem;
     font-weight: 600;
 }
 
 /* "Workspace image" label above the picture, same style as the "Workspace name" label */
 .ws-image-field {
     align-items: flex-start;
-    gap: 6px;
+    gap: 0.375rem;
 }
 
 .ws-field-label {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: rgba(255, 255, 255, 0.7);
 }
 
@@ -214,9 +214,9 @@
 .ws-activity li {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: 0.75rem;
 
-    padding: 12px 0;
+    padding: 0.75rem 0;
     border-bottom: 1px solid #444;
 }
 
@@ -225,8 +225,8 @@
 }
 
 .ws-activity-avatar {
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
     flex-shrink: 0;
 
     display: flex;
@@ -238,7 +238,7 @@
 
     background-color: #555;
     color: white;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
 }
 
@@ -255,7 +255,7 @@
 .ws-activity-text p {
     margin: 0;
     color: white;
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.4;
     overflow-wrap: anywhere;
 }
@@ -269,5 +269,11 @@
     margin-top: 2px;
 
     color: rgba(255, 255, 255, 0.5);
-    font-size: 12px;
+    font-size: 0.75rem;
+}
+
+/* workspaces icon next to the three lines scales with the page */
+.ws-sidebar-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
 }

@@ -1,15 +1,15 @@
 /* account icon in the top right corner */
 .account-container {
     position: fixed;
-    top: 16px;
-    right: 20px;
+    top: 1rem;
+    right: 1.25rem;
     z-index: 10;
     outline: none;
 }
 
 .account-button {
-    width: 40px;
-    height: 40px;
+    width: 2.5rem;
+    height: 2.5rem;
 
     display: flex;
     align-items: center;
@@ -29,10 +29,10 @@
 
 .account-menu {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 0.5rem);
     right: 0;
 
-    min-width: 240px;
+    min-width: 15rem;
 
     display: flex;
     flex-direction: column;
@@ -40,22 +40,22 @@
     /* same dark background as the sidebar */
     background: #333;
     border: 1px solid #444;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.3);
 
-    padding: 6px;
+    padding: 0.375rem;
 }
 
 .account-menu button {
-    padding: 10px 12px;
+    padding: 0.625rem 0.75rem;
 
     border: none;
-    border-radius: 6px;
+    border-radius: 0.375rem;
 
     background: transparent;
     color: white;
     text-align: left;
-    font-size: 15px;
+    font-size: 0.9375rem;
     cursor: pointer;
 }
 
@@ -67,9 +67,9 @@
 
 /* "Accounts" heading at the top of the account menu */
 .account-menu-heading {
-    margin: 4px 12px 8px;
+    margin: 0.25rem 0.75rem 0.5rem;
 
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -81,13 +81,13 @@
 .account-current {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px 12px;
+    gap: 0.625rem;
+    padding: 0.375rem 0.75rem;
 }
 
 .account-avatar {
-    width: 36px;
-    height: 36px;
+    width: 2.25rem;
+    height: 2.25rem;
     flex-shrink: 0;
 
     display: flex;
@@ -107,12 +107,12 @@
 
 .account-username {
     color: white;
-    font-size: 15px;
+    font-size: 0.9375rem;
 }
 
 .account-email {
     color: rgba(255, 255, 255, 0.6);
-    font-size: 13px;
+    font-size: 0.8125rem;
 
     overflow: hidden;
     text-overflow: ellipsis;
@@ -121,7 +121,7 @@
 
 .account-divider {
     height: 1px;
-    margin: 8px 0;
+    margin: 0.5rem 0;
     background-color: #444;
 }
 
@@ -136,4 +136,15 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* icons inside the account button and menu scale with the page */
+.account-button svg {
+    width: 1.375rem;
+    height: 1.375rem;
+}
+
+.account-avatar svg {
+    width: 1.25rem;
+    height: 1.25rem;
 }

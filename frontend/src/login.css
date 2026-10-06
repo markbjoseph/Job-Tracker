@@ -7,8 +7,8 @@
 .login-container {
     display: flex;
     flex-direction: column;
-    gap: 50px;
-    padding: 30px;
+    gap: 3.125rem;
+    padding: 1.875rem;
 }
 
 .input-container {
@@ -19,40 +19,40 @@
 }
 
 .input-container label {
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 
 .input-container input {
-    width: 500px;
-    padding: 15px;
-    font-size: 18px;
+    width: 31.25rem;
+    padding: 0.9375rem;
+    font-size: 1.125rem;
     box-sizing: border-box;
-    border-radius: 16px;
-    border: 3px solid black;
+    border-radius: 1rem;
+    border: 0.1875rem solid black;
 }
 
 .input-container input:hover {
-    border: 3px solid #ccc;
+    border: 0.1875rem solid #ccc;
 }
 
 .button-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px; 
+    gap: 1.25rem; 
 }
 
 .button-container button {
-    width: 250px;
-    padding: 15px;
-    font-size: 18px;
-    border-radius: 32px;
-    border: 3px solid black;
+    width: 15.625rem;
+    padding: 0.9375rem;
+    font-size: 1.125rem;
+    border-radius: 2rem;
+    border: 0.1875rem solid black;
     box-sizing: border-box;
 }
 
 .button-container button:hover {
-    border: 3px solid #ccc;
+    border: 0.1875rem solid #ccc;
 }
 
 

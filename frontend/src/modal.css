@@ -15,10 +15,10 @@
 
 .modal {
     background: white;
-    padding: 30px;
-    border-radius: 10px;
+    padding: 1.875rem;
+    border-radius: 0.625rem;
 
     width: 50%;
-    max-width: 700px;
-    min-height: 300px;
+    max-width: 43.75rem;
+    min-height: 18.75rem;
 }
