@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./registration.css";
+import kanbanImage from "./assets/kanban board.jpg";
 import { useNavigate } from "react-router-dom";
 
 
@@ -34,9 +35,12 @@ function Registration() {
 
     
     return (
-        <div>
-            
-        <h1>Register Your Account</h1>
+        // two halves: the form on the left, the picture on the right
+        <div className="register-layout">
+
+        <div className="register-side">
+
+        <h1 className="register-title">Create an Account</h1>
 
             <div className="register-page">
 
@@ -105,6 +109,13 @@ function Registration() {
                     </form>
 
             </div>
+
+        </div>
+
+        {/* right half: picture of a kanban board, just for decoration */}
+        <div className="register-image">
+            <img src={kanbanImage} alt="" />
+        </div>
 
         </div>
     );
