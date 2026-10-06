@@ -72,6 +72,40 @@
 
     const [workspace, setWorkspace] = useState(null);
 
+    // message in the red pop-up at the bottom of the screen ("" = hidden)
+    const [errorMessage, setErrorMessage] = useState("");
+    const errorTimerRef = useRef(null);
+
+    // shows the pop-up, which hides itself after a few seconds
+    const showError = (message) => {
+        setErrorMessage(message);
+        clearTimeout(errorTimerRef.current);
+        errorTimerRef.current = setTimeout(() => setErrorMessage(""), 4000);
+    };
+
+    // viewers can look at everything but not change it (myRole comes from GET /workspaces/:id)
+    const isViewer = workspace?.myRole === "viewer";
+    const VIEWER_MESSAGE = "You're a viewer in this workspace, so you can't make changes.";
+
+    // call at the start of anything that changes boards, lists or cards:
+    // shows the pop-up and returns true for viewers, so the action can stop
+    const blockViewer = () => {
+        if (isViewer) {
+            showError(VIEWER_MESSAGE);
+            return true;
+        }
+        return false;
+    };
+
+    // the server refused a change: show why, and reload so the screen matches what's actually saved
+    const handleWriteError = async (data) => {
+        showError(data?.message || "Something went wrong, please try again.");
+        await getBoards();
+        if (selectedBoard) {
+            await getList(selectedBoard);
+        }
+    };
+
     const [showMembersModal, setShowMembersModal] = useState(false);
 
 
@@ -155,6 +189,11 @@
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            await handleWriteError(data);
+            return;
+        }
         
         console.log(data);
 
@@ -170,6 +209,8 @@
 
     const deleteBoard = async (board) => {
 
+        if (blockViewer()) return;
+
         if (!window.confirm(`Delete "${board.title}" and all of its lists and cards?`)) {
             return;
         }
@@ -184,7 +225,7 @@
         const data = await response.json();
 
         if (!response.ok) {
-            alert(data.message);
+            await handleWriteError(data);
             return;
         }
 
@@ -230,6 +271,11 @@
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            await handleWriteError(data);
+            return;
+        }
         console.log(data);
 
         await getList(selectedBoard);
@@ -262,6 +308,7 @@
 
         if (!response.ok) {
             e.target.innerText = selectedBoard.title;
+            showError(data.message);
             return;
         }
 
@@ -295,6 +342,12 @@
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            e.target.innerText = list.title;
+            await handleWriteError(data);
+            return;
+        }
         console.log(data);
 
         setLists((currentLists) =>
@@ -341,6 +394,12 @@
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            e.target.innerText = selectedCard.title;
+            await handleWriteError(data);
+            return;
+        }
         console.log(data);
 
         replaceCard(data);
@@ -375,7 +434,7 @@
         const data = await response.json();
 
         if (!response.ok) {
-            alert(data.message);
+            await handleWriteError(data);
             return;
         }
 
@@ -393,7 +452,7 @@
         }
 
         if (!file.type.startsWith("image/")) {
-            alert("Please choose an image file");
+            showError("Please choose an image file.");
             return;
         }
 
@@ -401,7 +460,7 @@
             // keep its shape, longest side at most 800px so it stays a reasonable size
             await saveCard({ image: await fitImage(file, 800) });
         } catch {
-            alert("Couldn't read that image");
+            showError("Couldn't read that image.");
         }
     };
 
@@ -428,6 +487,8 @@
 
     const startImageDrag = (e) => {
         e.preventDefault();
+
+        if (blockViewer()) return;
 
         const picture = cardImageRef.current.getBoundingClientRect();
         imageGrabRef.current = { y: e.clientY - picture.top };
@@ -484,6 +545,12 @@
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            e.target.innerText = selectedCard.description || "";
+            await handleWriteError(data);
+            return;
+        }
         console.log(data);
 
         replaceCard(data);
@@ -506,6 +573,11 @@
         })
 
         const data = await response.json();
+
+        if (!response.ok) {
+            await handleWriteError(data);
+            return;
+        }
         console.log(data);
     }
 
@@ -529,6 +601,11 @@
         })
 
         const data = await response.json();
+
+        if (!response.ok) {
+            await handleWriteError(data);
+            return;
+        }
         console.log(data);
     }
 
@@ -583,6 +660,11 @@
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            await handleWriteError(data);
+            return;
+        }
         
         console.log(data);
 
@@ -594,6 +676,11 @@
 
     const deleteList = async () => {
 
+        if (blockViewer()) {
+            setShowListMenu(false);
+            return;
+        }
+
         //sends a DELETE request to the backend
         const response = await fetch(`http://localhost:3000/lists/${selectedList.id}`, {
             method: "DELETE",
@@ -604,6 +691,11 @@
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            await handleWriteError(data);
+            return;
+        }
         
         console.log(data);
 
@@ -613,6 +705,11 @@
     };
 
         const deleteCard = async () => {
+
+        if (blockViewer()) {
+            setShowCardMenu(false);
+            return;
+        }
 
         //sends a DELETE request to the backend
         const response = await fetch(`http://localhost:3000/cards/${selectedCard.id}`, {
@@ -624,6 +721,11 @@
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            await handleWriteError(data);
+            return;
+        }
         
         console.log(data);
 
@@ -644,6 +746,20 @@
 
             {/* account icon, top right */}
             <AccountMenu />
+
+            {/* error pop-up, e.g. when a viewer tries to change something */}
+            {errorMessage && (
+                <div className="error-toast" role="alert">
+                    <span>{errorMessage}</span>
+                    <button
+                    type="button"
+                    aria-label="Dismiss"
+                    onClick={() => setErrorMessage("")}
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
 
             {/* share this workspace, next to the account icon */}
             <button
@@ -797,7 +913,7 @@
                             <button
                             type="button"
                             className="sidebar-button add-board"
-                            onClick={() => setAddingBoard(true)}
+                            onClick={() => !blockViewer() && setAddingBoard(true)}
                             >
                                 Add a Board +
                             </button>
@@ -824,8 +940,9 @@
                     <h2
                     key={`board-title-${selectedBoard.id}-${selectedBoard.title}`}
                     className="editable"
-                    contentEditable
+                    contentEditable={!isViewer}
                     suppressContentEditableWarning
+                    onClick={() => isViewer && showError(VIEWER_MESSAGE)}
                     onBlur={updateBoard}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -896,7 +1013,12 @@
 
                         //ondragstart runs when the user starts dragging a list
                         //remembers that the user is dragging a particular list 
-                        onDragStart={() => {
+                        onDragStart={(e) => {
+                            // viewers can't move lists
+                            if (blockViewer()) {
+                                e.preventDefault();
+                                return;
+                            }
                             setDraggedList(list);
                         }}
                         
@@ -998,8 +1120,9 @@
                                 <h3
                                 key={`list-title-${list.title}`}
                                 className="editable"
-                                contentEditable
+                                contentEditable={!isViewer}
                                 suppressContentEditableWarning
+                                onClick={() => isViewer && showError(VIEWER_MESSAGE)}
                                 onBlur={(e) => updateList(list, e)}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
@@ -1050,6 +1173,11 @@
 
                                             onDragStart={(e) => {
                                                 e.stopPropagation();
+                                                // viewers can't move cards
+                                                if (blockViewer()) {
+                                                    e.preventDefault();
+                                                    return;
+                                                }
                                                 setDraggedCard(card);
                                             }}
                                             
@@ -1228,7 +1356,7 @@
                             {addingCardListId !== list.id && (
                                 <button 
                                 className="add-card"
-                                onClick={() => setAddingCardListId(list.id)}
+                                onClick={() => !blockViewer() && setAddingCardListId(list.id)}
                                 >
                                     Add a Card + 
                                 </button>
@@ -1292,7 +1420,7 @@
                             <button
                             type="button"
                             className="add-list-button"
-                            onClick={() => setShowTextList(true)}
+                            onClick={() => !blockViewer() && setShowTextList(true)}
                             >
                                 Add a List +
                             </button>
@@ -1354,8 +1482,9 @@
                     <h2
                     key={`title-${selectedCard.title}`}
                     className="card-title editable"
-                    contentEditable
+                    contentEditable={!isViewer}
                     suppressContentEditableWarning
+                    onClick={() => isViewer && showError(VIEWER_MESSAGE)}
                     onBlur={updateCardTitle}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -1389,6 +1518,7 @@
                             <div className="list-menu-dropdown">
                                 <button onClick={() => {
                                     setShowCardMenu(false);
+                                    if (blockViewer()) return;
                                     cardImageInputRef.current.click();
                                 }}>
                                     {selectedCard.image ? "Change image" : "Add image"}
@@ -1397,6 +1527,7 @@
                                 {selectedCard.image && (
                                     <button onClick={() => {
                                         setShowCardMenu(false);
+                                        if (blockViewer()) return;
                                         saveCard({ image: null });
                                     }}>
                                         Remove image
@@ -1454,8 +1585,9 @@
                     <p
                     key={`description-${selectedCard.description}`}
                     className="editable card-description"
-                    contentEditable
+                    contentEditable={!isViewer}
                     suppressContentEditableWarning
+                    onClick={() => isViewer && showError(VIEWER_MESSAGE)}
                     data-placeholder="Add a description..."
                     onBlur={updateCardDescription}
                     onKeyDown={(e) => {

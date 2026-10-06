@@ -638,3 +638,54 @@
     box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.25);
     opacity: 0.85;
 }
+
+/* red pop-up at the bottom of the screen for errors, e.g. a viewer trying to change something */
+.error-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translateX(-50%);
+    z-index: 100;
+
+    max-width: min(32rem, calc(100% - 2rem));
+    padding: 0.75rem 0.75rem 0.75rem 1rem;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    border-radius: 0.5rem;
+    background-color: #b3261e;
+    color: white;
+    font-size: 0.9375rem;
+    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.3);
+
+    animation: error-toast-in 0.2s ease;
+}
+
+.error-toast button {
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+
+    border: none;
+    border-radius: 0.375rem;
+
+    background: transparent;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.error-toast button:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+@keyframes error-toast-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 0.5rem);
+    }
+}
