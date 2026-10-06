@@ -12,6 +12,7 @@
 .account-page-container {
     width: 100%;
     max-width: 75rem;
+    margin-inline: auto;
 
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));

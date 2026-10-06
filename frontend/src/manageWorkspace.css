@@ -117,8 +117,6 @@
 
 /* the selected section, beside the sidebar */
 .ws-main {
-    /* use most of the space next to the sidebar, but not so wide lines get hard to read */
-    max-width: 75rem;
     padding: 4.375rem 2.5rem 2.5rem;
     box-sizing: border-box;
 
@@ -135,6 +133,15 @@
 
 .ws-main.sidebar-closed {
     margin-left: 4.0625rem;
+}
+
+/* each section is centred in the space to the right of the sidebar,
+   using most of it but not so wide that lines get hard to read */
+.ws-main > * {
+    width: 100%;
+    max-width: 75rem;
+    margin-inline: auto;
+    box-sizing: border-box;
 }
 
 /* Members section: same box as the Share pop-up (.modal + .share-modal), just not floating */
