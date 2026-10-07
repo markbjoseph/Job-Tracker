@@ -16,23 +16,37 @@
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
+
+    /* gap between each label and its text box */
+    gap: 0.75rem;
+}
+
+/* space between the email section and the password section */
+.input-container input + label {
+    margin-top: 1.5rem;
 }
 
 .input-container label {
     font-size: 1.25rem;
 }
 
+/* same look as the other text boxes in the app (registration, account, workspace, share pop-up) */
 .input-container input {
     width: 31.25rem;
-    padding: 0.9375rem;
-    font-size: 1.125rem;
+    max-width: 100%;
+    padding: 0.625rem;
     box-sizing: border-box;
-    border-radius: 1rem;
-    border: 0.1875rem solid black;
+
+    border: 1px solid #555;
+    border-radius: 0.375rem;
+
+    background-color: #444;
+    color: white;
+    font-size: 0.9375rem;
 }
 
-.input-container input:hover {
-    border: 0.1875rem solid #ccc;
+.input-container input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .button-container {
@@ -42,18 +56,42 @@
     gap: 1.25rem; 
 }
 
+/* buttons styled like the text boxes: dark grey, white text, thin border, same width
+   (same as the registration page) */
 .button-container button {
-    width: 15.625rem;
-    padding: 0.9375rem;
-    font-size: 1.125rem;
-    border-radius: 2rem;
-    border: 0.1875rem solid black;
+    width: 31.25rem;
+    max-width: 100%;
+    padding: 0.625rem;
     box-sizing: border-box;
+
+    border: 1px solid #555;
+    border-radius: 0.375rem;
+
+    background-color: #444;
+    color: white;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    cursor: pointer;
 }
 
 .button-container button:hover {
-    border: 0.1875rem solid #ccc;
+    background-color: #555;
+}
+
+/* "Create New Account" is the secondary option, so it's lighter */
+.button-container button[type="button"] {
+    background-color: transparent;
+    color: #444;
+}
+
+.button-container button[type="button"]:hover {
+    background-color: rgba(0, 0, 0, 0.06);
 }
 
 
 
+
+/* "Login" heading, centred above the form */
+.login-title {
+    text-align: center;
+}
